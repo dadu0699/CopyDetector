@@ -8,8 +8,8 @@ commentMultiline        (\/\*[\s\S]*?\*\/|\/\/.*)
 identifier              (([a-zA-Z_])[a-zA-Z0-9_]*)
 digit                   ([0-9]+)
 decimal                 ({digit}("."{digit})?)
-character               (')((?:\\(n|t|r|\\|"|')|(?:(?!\1).))?)\1
-stringLiteral           (")((?:\\\1|(?:(?!\1).))*)\1
+character               (("\'")((?:\\("n"|"t"|"r"|"\\"|"\""|"\'")|(?:(?!\1).))?)\1)
+stringLiteral           (("\"")((?:\\\1|(?:(?!\1).))*)\1)
 
 %%
 \s+                     /* skip whitespace */
@@ -66,7 +66,6 @@ stringLiteral           (")((?:\\\1|(?:(?!\1).))*)\1
 "||"                    return '||'
 "!"                     return '!'
 {identifier}            return 'identifier'
-{digit}                 return 'digit'
 {decimal}               return 'decimal'
 {character}             return 'character'
 {stringLiteral}         return 'stringLiteral'
@@ -82,9 +81,9 @@ stringLiteral           (")((?:\\\1|(?:(?!\1).))*)\1
 %start START
 %% /* language grammar */
 
-START : IMPORT CLASS EOF
-      | CLASS EOF
-      | EOF
+START : IMPORT CLASS 'EOF'
+      | CLASS 'EOF'
+      | 'EOF'
       ;
 
 IMPORTS : IMPORTS IMPORT
@@ -104,13 +103,11 @@ BODYCLASS : BODYCLASS METHOD
           | DECLARATION
           ;
 
-METHOD : METHODTYPE 'identifier' '(' PARAMS ')' BODY
-       | METHODTYPE 'identifier' '(' ')' BODY
+METHOD : 'void' 'identifier' '(' PARAMS ')' BODY
+       | TYPE 'identifier' '(' PARAMS ')' BODY
+       | 'void' 'identifier' '(' ')' BODY
+       | TYPE 'identifier' '(' ')' BODY
        ;
-
-METHODTYPE : TYPE
-           | 'void'
-           ;
 
 TYPE : 'int'
      | 'double'
@@ -124,6 +121,7 @@ PARAMS : PARAMS ',' PARAM
        ;
 
 PARAM : TYPE 'identifier'
+      ;
 
 BODY : '{' SENTENCES '}'
      | '{' '}'
@@ -134,4 +132,117 @@ SENTENCES : SENTENCES SENTENCE
           ;
 
 SENTENCE : DECLARATION
-         |
+         | ASSIGNMENT
+         | INVOKEMETHOD ';'
+         | SOUT
+         | IF
+         | SWITCH
+         | FOR
+         | WHILE
+         | DOWHILE
+         | RETURN
+         | BREAK
+         | CONTINUE
+         ;
+
+DECLARATION : TYPE IDLIST ';'
+            | TYPE IDLIST ASSIGNMENT_EXPRESSION ';'
+            ;
+
+IDLIST : IDLIST ',' 'identifier'
+       | 'identifier'
+       ;
+
+ASSIGNMENT : 'identifier' ASSIGNMENT_EXPRESSION ';'
+           | ITERATOR ';'
+           ;
+
+ITERATOR : 'identifier' '++'
+         | 'identifier' '--'
+         ;
+
+ASSIGNMENT_EXPRESSION : '=' EXPRESSION
+                      ;
+
+EXPRESSION : EXPRESSION '+' EXPRESSION
+           | EXPRESSION '-' EXPRESSION
+           | EXPRESSION '*' EXPRESSION
+           | EXPRESSION '/' EXPRESSION
+           | EXPRESSION '^' EXPRESSION
+           | EXPRESSION '%' EXPRESSION
+           | EXPRESSION '<' EXPRESSION
+           | EXPRESSION '>' EXPRESSION
+           | EXPRESSION '<=' EXPRESSION
+           | EXPRESSION '>=' EXPRESSION
+           | EXPRESSION '==' EXPRESSION
+           | EXPRESSION '!=' EXPRESSION
+           | EXPRESSION '||' EXPRESSION
+           | EXPRESSION '&&' EXPRESSION
+           | '(' EXPRESSION ')'
+           | '-' EXPRESSION
+           | '!' EXPRESSION
+           | 'identifier'
+           | 'stringLiteral'
+           | 'character'
+           | 'decimal'
+           | 'true'
+           | 'false'
+           | INVOKEMETHOD
+           ;
+
+INVOKEMETHOD : 'identifier' '(' INVOKEMETHODPARAMS ')'
+             | 'identifier' '(' ')'
+             ;
+
+INVOKEMETHODPARAMS : INVOKEMETHOD ',' EXPRESSION
+                   | EXPRESSION
+                   ;
+
+SOUT : 'System' '.' 'out' 'println' CONDITION ';'
+     | 'System' '.' 'out' 'println' '(' ')' ';'
+     | 'System' '.' 'out' 'print' CONDITION ';'
+     | 'System' '.' 'out' 'print' '(' ')' ';'
+     ;
+
+CONDITION : '(' EXPRESSION ')'
+          ;
+
+IF : 'if' CONDITION BODY
+   | 'if' CONDITION BODY 'else' IF
+   | 'if' CONDITION BODY 'else' BODY
+   ;
+
+SWITCH : 'switch' CONDITION '{' CASE DEFAULT '}'
+       | 'switch' CONDITION '{' CASE '}'
+       | 'switch' CONDITION '{' DEFAULT '}'
+       | 'switch' CONDITION '{' '}'
+       ;
+
+CASE : CASE 'case' EXPRESSION ':' SENTENCES
+     | CASE 'case' EXPRESSION ':'
+     | 'case' EXPRESSION ':' SENTENCES
+     | 'case' EXPRESSION ':'
+     ;
+
+DEFAULT : 'default' ':' SENTENCES
+        | 'default' ':'
+        ;
+
+FOR : 'for' '(' TYPE 'identifier' ASSIGNMENT_EXPRESSION ';' EXPRESSION ';' ITERATOR ')' BODY
+    | 'for' '(' 'identifier' ASSIGNMENT_EXPRESSION ';' EXPRESSION ';' ITERATOR ')' BODY
+    ;
+
+WHILE : 'while' CONDITION BODY
+      ;
+
+DO : 'do' BODY WHILE CONDITION ';'
+   ;
+
+RETURN : 'return' EXPRESSION? ';'
+	   ;
+
+BREAK : 'break' ';'
+	  ;
+
+CONTINUE : 'continue' ';'
+	     ;
