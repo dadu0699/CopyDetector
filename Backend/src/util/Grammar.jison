@@ -81,9 +81,9 @@ stringLiteral           (("\"")((?:\\\1|(?:(?!\1).))*)\1)
 %start START
 %% /* language grammar */
 
-START : IMPORT CLASS 'EOF'
-      | CLASS 'EOF'
-      | 'EOF'
+START : IMPORT? CLASS? 'EOF'
+      // | CLASS 'EOF'
+      // | 'EOF'
       ;
 
 IMPORTS : IMPORTS IMPORT
@@ -93,8 +93,8 @@ IMPORTS : IMPORTS IMPORT
 IMPORT : 'import' 'identifier' ';'
        ;
 
-CLASS : 'class' 'identifier' '{' BODYCLASS '}'
-      | 'class' 'identifier' '{' '}'
+CLASS : 'class' 'identifier' '{' BODYCLASS? '}'
+      // | 'class' 'identifier' '{' '}'
       ;
 
 BODYCLASS : BODYCLASS METHOD
@@ -103,10 +103,10 @@ BODYCLASS : BODYCLASS METHOD
           | DECLARATION
           ;
 
-METHOD : 'void' 'identifier' '(' PARAMS ')' BODY
-       | TYPE 'identifier' '(' PARAMS ')' BODY
-       | 'void' 'identifier' '(' ')' BODY
-       | TYPE 'identifier' '(' ')' BODY
+METHOD : 'void' 'identifier' '(' PARAMS? ')' BODY
+       | TYPE 'identifier' '(' PARAMS? ')' BODY
+       // | 'void' 'identifier' '(' ')' BODY
+       // | TYPE 'identifier' '(' ')' BODY
        ;
 
 TYPE : 'int'
@@ -123,8 +123,8 @@ PARAMS : PARAMS ',' PARAM
 PARAM : TYPE 'identifier'
       ;
 
-BODY : '{' SENTENCES '}'
-     | '{' '}'
+BODY : '{' SENTENCES? '}'
+     // | '{' '}'
      ;
 
 SENTENCES : SENTENCES SENTENCE
@@ -145,8 +145,8 @@ SENTENCE : DECLARATION
          | CONTINUE
          ;
 
-DECLARATION : TYPE IDLIST ';'
-            | TYPE IDLIST ASSIGNMENT_EXPRESSION ';'
+DECLARATION : TYPE IDLIST ASSIGNMENT_EXPRESSION? ';'
+            | TYPE IDLIST ';'
             ;
 
 IDLIST : IDLIST ',' 'identifier'
@@ -190,18 +190,18 @@ EXPRESSION : EXPRESSION '+' EXPRESSION
            | INVOKEMETHOD
            ;
 
-INVOKEMETHOD : 'identifier' '(' INVOKEMETHODPARAMS ')'
-             | 'identifier' '(' ')'
+INVOKEMETHOD : 'identifier' '(' INVOKEMETHODPARAMS? ')'
+             // | 'identifier' '(' ')'
              ;
 
 INVOKEMETHODPARAMS : INVOKEMETHOD ',' EXPRESSION
                    | EXPRESSION
                    ;
 
-SOUT : 'System' '.' 'out' 'println' CONDITION ';'
-     | 'System' '.' 'out' 'println' '(' ')' ';'
-     | 'System' '.' 'out' 'print' CONDITION ';'
-     | 'System' '.' 'out' 'print' '(' ')' ';'
+SOUT : 'System' '.' 'out' 'println' '(' EXPRESSION? ')' ';'
+     // | 'System' '.' 'out' 'println' CONDITION ';'
+     | 'System' '.' 'out' 'print' '(' EXPRESSION? ')' ';'
+     // | 'System' '.' 'out' 'print' CONDITION ';'
      ;
 
 CONDITION : '(' EXPRESSION ')'
@@ -212,24 +212,24 @@ IF : 'if' CONDITION BODY
    | 'if' CONDITION BODY 'else' BODY
    ;
 
-SWITCH : 'switch' CONDITION '{' CASE DEFAULT '}'
-       | 'switch' CONDITION '{' CASE '}'
-       | 'switch' CONDITION '{' DEFAULT '}'
-       | 'switch' CONDITION '{' '}'
+SWITCH : 'switch' CONDITION '{' CASE? DEFAULT? '}'
+       // | 'switch' CONDITION '{' CASE '}'
+       // | 'switch' CONDITION '{' DEFAULT '}'
+       // | 'switch' CONDITION '{' '}'
        ;
 
-CASE : CASE 'case' EXPRESSION ':' SENTENCES
-     | CASE 'case' EXPRESSION ':'
-     | 'case' EXPRESSION ':' SENTENCES
-     | 'case' EXPRESSION ':'
+CASE : CASE 'case' EXPRESSION ':' SENTENCES?
+     // | CASE 'case' EXPRESSION ':'
+     | 'case' EXPRESSION ':' SENTENCES?
+     // | 'case' EXPRESSION ':'
      ;
 
-DEFAULT : 'default' ':' SENTENCES
-        | 'default' ':'
+DEFAULT : 'default' ':' SENTENCES?
+        // | 'default' ':'
         ;
 
-FOR : 'for' '(' TYPE 'identifier' ASSIGNMENT_EXPRESSION ';' EXPRESSION ';' ITERATOR ')' BODY
-    | 'for' '(' 'identifier' ASSIGNMENT_EXPRESSION ';' EXPRESSION ';' ITERATOR ')' BODY
+FOR : 'for' '(' TYPE? 'identifier' ASSIGNMENT_EXPRESSION ';' EXPRESSION ';' ITERATOR ')' BODY
+    // | 'for' '(' 'identifier' ASSIGNMENT_EXPRESSION ';' EXPRESSION ';' ITERATOR ')' BODY
     ;
 
 WHILE : 'while' CONDITION BODY
@@ -239,6 +239,7 @@ DO : 'do' BODY WHILE CONDITION ';'
    ;
 
 RETURN : 'return' EXPRESSION? ';'
+	   // | 'return' ';'
 	   ;
 
 BREAK : 'break' ';'
