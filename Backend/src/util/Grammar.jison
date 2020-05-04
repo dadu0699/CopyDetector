@@ -78,8 +78,8 @@ stringLiteral           (("\"")((?:\\\1|(?:(?!\1).))*)\1)
 %left '==', '!='
 %left '>=', '<=', '<', '>'
 %left '+' '-'
-%left '*' '/'
-%left '^' '%'
+%left '*' '/' '%'
+%left '^'
 %right '!'
 %left UMINUS
 
