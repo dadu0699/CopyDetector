@@ -73,9 +73,14 @@ stringLiteral           (("\"")((?:\\\1|(?:(?!\1).))*)\1)
 /lex
 
 /* operator associations and precedence */
+%left '||'
+%left '&&'
+%left '==', '!='
+%left '>=', '<=', '<', '>'
 %left '+' '-'
 %left '*' '/'
-%left '^'
+%left '^' '%'
+%right '!'
 %left UMINUS
 
 %start START
@@ -179,7 +184,7 @@ EXPRESSION : EXPRESSION '+' EXPRESSION
            | EXPRESSION '||' EXPRESSION
            | EXPRESSION '&&' EXPRESSION
            | '(' EXPRESSION ')'
-           | '-' EXPRESSION
+           | '-' EXPRESSION %prec UMINUS
            | '!' EXPRESSION
            | 'identifier'
            | 'stringLiteral'
@@ -194,7 +199,7 @@ INVOKEMETHOD : 'identifier' '(' INVOKEMETHODPARAMS? ')'
              // | 'identifier' '(' ')'
              ;
 
-INVOKEMETHODPARAMS : INVOKEMETHOD ',' EXPRESSION
+INVOKEMETHODPARAMS : INVOKEMETHODPARAMS ',' EXPRESSION
                    | EXPRESSION
                    ;
 
