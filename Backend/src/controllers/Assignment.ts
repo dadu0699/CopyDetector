@@ -6,7 +6,7 @@ export class Assignment extends Node {
     private value: Node;
 
     constructor(identifier: Object, value: Node, line: number, column: number) {
-        super(Type.null, line, column);
+        super(Type.assignment, line, column);
         this.identifier = identifier;
         this.value = value;
     }

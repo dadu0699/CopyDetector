@@ -5,8 +5,8 @@ export class InvokeMethod extends Node {
     private identifier: Node;
     private params: Node;
 
-    constructor(type: Type, identifier: Node, params: Node, line: number, column: number) {
-        super(type, line, column);
+    constructor(identifier: Node, params: Node, line: number, column: number) {
+        super(Type.invokeMethod, line, column);
         this.identifier = identifier;
         this.params = params;
     }

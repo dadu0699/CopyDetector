@@ -4,6 +4,8 @@ import cors from 'cors';
 
 import indexRoutes from './routes/indexRoutes';
 
+const parser = require('./util/grammar.js');
+
 class Server {
     public app: Application;
     constructor() {
