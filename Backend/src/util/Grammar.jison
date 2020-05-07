@@ -1,4 +1,5 @@
 %{
+    const { Type } = require('../models/Type');
 %}
 
 /* lexical grammar */
@@ -14,6 +15,7 @@ stringLiteral           (("\"")((?:\\\1|(?:(?!\1).))*)\1)
 %%
 \s+                     /* skip whitespace */
 {commentMultiline}      /* skip Single Line Comment AND Multiline Comment */
+
 "boolean"               return 'boolean'
 "break"                 return 'break'
 "case"                  return 'case'
@@ -70,6 +72,8 @@ stringLiteral           (("\"")((?:\\\1|(?:(?!\1).))*)\1)
 {character}             return 'character'
 {stringLiteral}         return 'stringLiteral'
 <<EOF>>                 return 'EOF';
+
+.                       { console.error('Lexical Error: ' + yytext + ', in the line ' + yylloc.first_line + ' and column ' + yylloc.first_column); }
 /lex
 
 /* operator associations and precedence */
@@ -86,9 +90,10 @@ stringLiteral           (("\"")((?:\\\1|(?:(?!\1).))*)\1)
 %start START
 %% /* language grammar */
 
-START : IMPORT? CLASS? 'EOF'
-      // | CLASS 'EOF'
-      // | 'EOF'
+START : IMPORT CLASS 'EOF'
+      | CLASS 'EOF'
+      | 'EOF'
+      | error { console.error('Syntactic error: ' + yytext + ', in the line ' + this._$.first_line + ' and column ' + this._$.first_column); }
       ;
 
 IMPORTS : IMPORTS IMPORT
@@ -98,8 +103,8 @@ IMPORTS : IMPORTS IMPORT
 IMPORT : 'import' 'identifier' ';'
        ;
 
-CLASS : 'class' 'identifier' '{' BODYCLASS? '}'
-      // | 'class' 'identifier' '{' '}'
+CLASS : 'class' 'identifier' '{' BODYCLASS '}'
+      | 'class' 'identifier' '{' '}'
       ;
 
 BODYCLASS : BODYCLASS METHOD
@@ -108,10 +113,10 @@ BODYCLASS : BODYCLASS METHOD
           | DECLARATION
           ;
 
-METHOD : 'void' 'identifier' '(' PARAMS? ')' BODY
-       | TYPE 'identifier' '(' PARAMS? ')' BODY
-       // | 'void' 'identifier' '(' ')' BODY
-       // | TYPE 'identifier' '(' ')' BODY
+METHOD : 'void' 'identifier' '(' PARAMS ')' BODY
+       | TYPE 'identifier' '(' PARAMS ')' BODY
+       | 'void' 'identifier' '(' ')' BODY
+       | TYPE 'identifier' '(' ')' BODY
        ;
 
 TYPE : 'int'
@@ -128,8 +133,8 @@ PARAMS : PARAMS ',' PARAM
 PARAM : TYPE 'identifier'
       ;
 
-BODY : '{' SENTENCES? '}'
-     // | '{' '}'
+BODY : '{' SENTENCES '}'
+     | '{' '}'
      ;
 
 SENTENCES : SENTENCES SENTENCE
@@ -150,7 +155,7 @@ SENTENCE : DECLARATION
          | CONTINUE
          ;
 
-DECLARATION : TYPE IDLIST ASSIGNMENT_EXPRESSION? ';'
+DECLARATION : TYPE IDLIST ASSIGNMENT_EXPRESSION ';'
             | TYPE IDLIST ';'
             ;
 
@@ -195,18 +200,18 @@ EXPRESSION : EXPRESSION '+' EXPRESSION
            | INVOKEMETHOD
            ;
 
-INVOKEMETHOD : 'identifier' '(' INVOKEMETHODPARAMS? ')'
-             // | 'identifier' '(' ')'
+INVOKEMETHOD : 'identifier' '(' INVOKEMETHODPARAMS ')'
+             | 'identifier' '(' ')'
              ;
 
 INVOKEMETHODPARAMS : INVOKEMETHODPARAMS ',' EXPRESSION
                    | EXPRESSION
                    ;
 
-SOUT : 'System' '.' 'out' 'println' '(' EXPRESSION? ')' ';'
-     // | 'System' '.' 'out' 'println' CONDITION ';'
-     | 'System' '.' 'out' 'print' '(' EXPRESSION? ')' ';'
-     // | 'System' '.' 'out' 'print' CONDITION ';'
+SOUT : 'System' '.' 'out' 'println' '(' ')' ';'
+     | 'System' '.' 'out' 'println' CONDITION ';'
+     | 'System' '.' 'out' 'print' '(' ')' ';'
+     | 'System' '.' 'out' 'print' CONDITION ';'
      ;
 
 CONDITION : '(' EXPRESSION ')'
@@ -217,24 +222,24 @@ IF : 'if' CONDITION BODY
    | 'if' CONDITION BODY 'else' BODY
    ;
 
-SWITCH : 'switch' CONDITION '{' CASE? DEFAULT? '}'
-       // | 'switch' CONDITION '{' CASE '}'
-       // | 'switch' CONDITION '{' DEFAULT '}'
-       // | 'switch' CONDITION '{' '}'
+SWITCH : 'switch' CONDITION '{' CASE DEFAULT '}'
+       | 'switch' CONDITION '{' CASE '}'
+       | 'switch' CONDITION '{' DEFAULT '}'
+       | 'switch' CONDITION '{' '}'
        ;
 
-CASE : CASE 'case' EXPRESSION ':' SENTENCES?
-     // | CASE 'case' EXPRESSION ':'
-     | 'case' EXPRESSION ':' SENTENCES?
-     // | 'case' EXPRESSION ':'
+CASE : CASE 'case' EXPRESSION ':' SENTENCES
+     | CASE 'case' EXPRESSION ':'
+     | 'case' EXPRESSION ':' SENTENCES
+     | 'case' EXPRESSION ':'
      ;
 
-DEFAULT : 'default' ':' SENTENCES?
-        // | 'default' ':'
+DEFAULT : 'default' ':' SENTENCES
+        | 'default' ':'
         ;
 
-FOR : 'for' '(' TYPE? 'identifier' ASSIGNMENT_EXPRESSION ';' EXPRESSION ';' ITERATOR ')' BODY
-    // | 'for' '(' 'identifier' ASSIGNMENT_EXPRESSION ';' EXPRESSION ';' ITERATOR ')' BODY
+FOR : 'for' '(' TYPE 'identifier' ASSIGNMENT_EXPRESSION ';' EXPRESSION ';' ITERATOR ')' BODY
+    | 'for' '(' 'identifier' ASSIGNMENT_EXPRESSION ';' EXPRESSION ';' ITERATOR ')' BODY
     ;
 
 WHILE : 'while' CONDITION BODY
@@ -243,8 +248,8 @@ WHILE : 'while' CONDITION BODY
 DO : 'do' BODY WHILE CONDITION ';'
    ;
 
-RETURN : 'return' EXPRESSION? ';'
-	   // | 'return' ';'
+RETURN : 'return' EXPRESSION ';'
+	   | 'return' ';'
 	   ;
 
 BREAK : 'break' ';'
