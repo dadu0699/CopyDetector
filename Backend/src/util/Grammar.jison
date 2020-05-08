@@ -48,7 +48,7 @@ stringLiteral           (("\"")((?:\\\1|(?:(?!\1).))*)\1)
 "}"                     return '}'
 "("                     return '('
 ")"                     return ')'
-","                     return '"'
+","                     return ','
 "."                     return '.'
 ":"                     return ':'
 ";"                     return ';'
@@ -89,6 +89,7 @@ stringLiteral           (("\"")((?:\\\1|(?:(?!\1).))*)\1)
 %left '^'
 %right '!'
 %left UMINUS
+%left '++' '--'
 
 %start START
 %% /* language grammar */
@@ -116,10 +117,10 @@ BODYCLASS : BODYCLASS METHOD { $1.push($2); $$ = $1; }
           | DECLARATION { $$ = [$1]; }
           ;
 
-METHOD : 'void' 'identifier' '(' ')' BODY { $$ = {'method': $2, 'type': $1, 'method_params': [], 'method_content': [$5] }; }
-       | TYPE 'identifier' '(' ')' BODY { $$ = {'method': $2, 'type': $1, 'method_params': [], 'method_content': [$5] }; }
-       | 'void' 'identifier' '(' PARAMS ')' BODY { $$ = {'method': $2, 'type': $1, 'method_params': $4, 'method_content': [$6] }; }
-       | TYPE 'identifier' '(' PARAMS ')' BODY { $$ = {'method': $2, 'type': $1, 'method_params': $4, 'method_content': [$6] }; }
+METHOD : 'void' 'identifier' '(' ')' BODY { $$ = {'method': $2, 'type': $1, 'method_params': [], 'method_content': $5 }; }
+       | TYPE 'identifier' '(' ')' BODY { $$ = {'method': $2, 'type': $1, 'method_params': [], 'method_content': $5 }; }
+       | 'void' 'identifier' '(' PARAMS ')' BODY { $$ = {'method': $2, 'type': $1, 'method_params': $4, 'method_content': $6 }; }
+       | TYPE 'identifier' '(' PARAMS ')' BODY { $$ = {'method': $2, 'type': $1, 'method_params': $4, 'method_content': $6 }; }
        ;
 
 TYPE : 'int' { $$ = 'int'; }
@@ -133,19 +134,19 @@ PARAMS : PARAMS ',' PARAM { $1.push($3); $$ = $1; }
        | PARAM { $$ = [$1]; }
        ;
 
-PARAM : TYPE 'identifier' { $$ = { 'type': $1, 'identifier' : $2 }; }
+PARAM : TYPE 'identifier' { $$ = { 'type': $1, 'identifier' : $2, 'range' : @$.range }; }
       ;
 
-BODY : '{' SENTENCES '}'
-     | '{' '}'
+BODY : '{' '}' { $$ = []; }
+     | '{' SENTENCES '}' { $$ = $2; }
      ;
 
-SENTENCES : SENTENCES SENTENCE
-          | SENTENCE
+SENTENCES : SENTENCES SENTENCE { $1.push($2); $$ = $1; }
+          | SENTENCE { $$ = [$1]; }
           ;
 
-SENTENCE : DECLARATION
-         | ASSIGNMENT
+SENTENCE : DECLARATION { $$ = {'declaration' : $1}; }
+         | ASSIGNMENT { $$ = {'assignment' : $1}; }
          | INVOKEMETHOD ';'
          | SOUT
          | IF
@@ -158,20 +159,23 @@ SENTENCE : DECLARATION
          | CONTINUE
          ;
 
-DECLARATION : TYPE IDLIST ASSIGNMENT_EXPRESSION ';'
-            | TYPE IDLIST ';'
+DECLARATION : TYPE IDLIST ASSIGNMENT_EXPRESSION ';'  { $$ = { 'type' : $1, identifiers: $2, 'value' : $3 }; }
+            | TYPE IDLIST ';' { $$ = { 'type' : $1, 'id_list': $2 }; }
             ;
 
-IDLIST : IDLIST ',' 'identifier'
-       | 'identifier'
+IDLIST : IDLIST ',' ID { $1.push($3); $$ = $1; }
+       | ID { $$ = [$1]; }
        ;
 
-ASSIGNMENT : 'identifier' ASSIGNMENT_EXPRESSION ';'
-           | ITERATOR ';'
+ID : 'identifier' { $$ = [{'identifier': $1, 'range' : @$.range }]; }
+   ;
+
+ASSIGNMENT : 'identifier' ASSIGNMENT_EXPRESSION ';' { $$ = {'identifier': $1, 'value' : $2 }; }
+           | ITERATOR ';' { $$ = $1; }
            ;
 
-ITERATOR : 'identifier' '++'
-         | 'identifier' '--'
+ITERATOR : 'identifier' '++' { $$ = {'identifier': $1, 'value' : identifier + '+ 1' }; }
+         | 'identifier' '--' { $$ = {'identifier': $1, 'value' : identifier + '- 1' }; }
          ;
 
 ASSIGNMENT_EXPRESSION : '=' EXPRESSION
