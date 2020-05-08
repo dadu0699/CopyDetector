@@ -5,6 +5,7 @@
     const { Assignment } = require('../controllers/Assignment');
     const { BreakS } = require('../controllers/BreakS');
     const { CaseS } = require('../controllers/CaseS');
+    const { ClassS } = require('../controllers/ClassS');
     const { Condition } = require('../controllers/Condition');
     const { ContinueS } = require('../controllers/ContinueS');
     const { Declaration } = require('../controllers/Declaration');
@@ -12,8 +13,11 @@
     const { DoWhile } = require('../controllers/DoWhile');
     const { ForS } = require('../controllers/ForS');
     const { IfS } = require('../controllers/IfS');
+    const { ImportS } = require('../controllers/ImportS');
     const { InvokeMethod } = require('../controllers/InvokeMethod');
     const { IterationS } = require('../controllers/IterationS');
+    const { MethodS } = require('../controllers/MethodS');
+    const { Param } = require('../controllers/Param');
     const { Primitive } = require('../controllers/Primitive');
     const { Print } = require('../controllers/Print');
     const { ReturnS } = require('../controllers/ReturnS');
@@ -21,6 +25,7 @@
     const { WhileS } = require('../controllers/WhileS');
 
     var errorList = [];
+    var idError = 1;
 %}
 
 /* lexical grammar */
@@ -94,7 +99,7 @@ stringLiteral           (("\"")((?:\\\1|(?:(?!\1).))*)\1)
 {stringLiteral}         return 'stringLiteral'
 <<EOF>>                 return 'EOF';
 
-.                       { console.error('Lexical Error: ' + yytext + ', in the line ' + yylloc.first_line + ' and column ' + yylloc.first_column); }
+.                       { /*this.errorList.push(new Error(idError,  yylloc.first_line, yylloc.first_column, yytext, 'Unknown pattern', 'Lexical Error'));*/ console.error('Lexical Error: ' + yytext + ', in the line ' + yylloc.first_line + ' and column ' + yylloc.first_column); this.idError++; }
 /lex
 
 /* operator associations and precedence */
@@ -111,131 +116,131 @@ stringLiteral           (("\"")((?:\\\1|(?:(?!\1).))*)\1)
 %start START
 %% /* language grammar */
 
-START : IMPORT CLASS 'EOF'
-      | CLASS 'EOF'
+START : IMPORT CLASS 'EOF' { return $2 }
+      | CLASS 'EOF' { return $1 }
       | 'EOF'
-      | error { console.error('Syntactic error: ' + yytext + ', in the line ' + this._$.first_line + ' and column ' + this._$.first_column); }
+      | error { /*this.errorList.push(new Error(idError, this._$.first_line, this._$.first_column, yytext, '', 'Syntactic error')); */console.error('Syntactic error: ' + yytext + ', in the line ' + this._$.first_line + ' and column ' + this._$.first_column); this.idError++; }
       ;
 
-IMPORTS : IMPORTS IMPORT
-        | IMPORT
+IMPORTS : IMPORTS IMPORT { $1.push($2); $$ = $1; }
+        | IMPORT { $$ = [$1]; }
         ;
 
-IMPORT : 'import' 'identifier' ';'
+IMPORT : 'import' 'identifier' ';' { $$ = new ImportS($2, this._$.first_line, this._$.first_column); }
        ;
 
-CLASS : 'class' 'identifier' '{' BODYCLASS '}'
-      | 'class' 'identifier' '{' '}'
+CLASS : 'class' 'identifier' '{' BODYCLASS '}' { $$ = new ClassS($2, $4, this._$.first_line, this._$.first_column); }
+      | 'class' 'identifier' '{' '}' { $$ = new ClassS($2, null, this._$.first_line, this._$.first_column); }
       ;
 
-BODYCLASS : BODYCLASS METHOD
-          | BODYCLASS DECLARATION
-          | METHOD
-          | DECLARATION
+BODYCLASS : BODYCLASS METHOD { $1.push($2); $$ = $1; }
+          | BODYCLASS DECLARATION { $1.push($2); $$ = $1; }
+          | METHOD { $$ = [$1]; }
+          | DECLARATION { $$ = [$1]; }
           ;
 
-METHOD : 'void' 'identifier' '(' PARAMS ')' BODY
-       | TYPE 'identifier' '(' PARAMS ')' BODY
-       | 'void' 'identifier' '(' ')' BODY
-       | TYPE 'identifier' '(' ')' BODY
+METHOD : 'void' 'identifier' '(' PARAMS ')' BODY { $$ = new MethodS(Type.void, $2, $4, $6, this._$.first_line, this._$.first_column); }
+       | TYPE 'identifier' '(' PARAMS ')' BODY { $$ = new MethodS($1, $2, $4, $6, this._$.first_line, this._$.first_column); }
+       | 'void' 'identifier' '(' ')' BODY { $$ = new MethodS(Type.void, $2, [], $6, this._$.first_line, this._$.first_column); }
+       | TYPE 'identifier' '(' ')' BODY { $$ = new MethodS($1, $2, [], $6, this._$.first_line, this._$.first_column); }
        ;
 
-TYPE : 'int'
-     | 'double'
-     | 'boolean'
-     | 'char'
-     | 'String'
+TYPE : 'int' { $$ = Type.int; }
+     | 'double' { $$ = Type.double; }
+     | 'boolean' { $$ = Type.boolean; }
+     | 'char' { $$ = Type.char; }
+     | 'String' { $$ = Type.String; }
      ;
 
-PARAMS : PARAMS ',' PARAM
-       | PARAM
+PARAMS : PARAMS ',' PARAM { $1.push($3); $$ = $1; }
+       | PARAM { $$ = [$1]; }
        ;
 
-PARAM : TYPE 'identifier'
+PARAM : TYPE 'identifier' { $$ = new Param($1, $2, this._$.first_line, this._$.first_column) }
       ;
 
-BODY : '{' SENTENCES '}'
-     | '{' '}'
+BODY : '{' SENTENCES '}' { $$ = [$1]; }
+     | '{' '}' { $$ = []; }
      ;
 
-SENTENCES : SENTENCES SENTENCE
-          | SENTENCE
+SENTENCES : SENTENCES SENTENCE { $1.push($2); $$ = $1; }
+          | SENTENCE { $$ = [$1]; }
           ;
 
-SENTENCE : DECLARATION
-         | ASSIGNMENT
-         | INVOKEMETHOD ';'
-         | SOUT
-         | IF
-         | SWITCH
-         | FOR
-         | WHILE
-         | DOWHILE
-         | RETURN
-         | BREAK
-         | CONTINUE
+SENTENCE : DECLARATION { $$ = $1; }
+         | ASSIGNMENT { $$ = $1; }
+         | INVOKEMETHOD ';' { $$ = $1; }
+         | SOUT { $$ = $1; }
+         | IF { $$ = $1; }
+         | SWITCH { $$ = $1; }
+         | FOR { $$ = $1; }
+         | WHILE { $$ = $1; }
+         | DOWHILE { $$ = $1; }
+         | RETURN { $$ = $1; }
+         | BREAK { $$ = $1; }
+         | CONTINUE { $$ = $1; }
          ;
 
-DECLARATION : TYPE IDLIST ASSIGNMENT_EXPRESSION ';'
-            | TYPE IDLIST ';'
+DECLARATION : TYPE IDLIST ASSIGNMENT_EXPRESSION ';' { $$ = new Declaration($1, $2, $3, this._$.first_line, this._$.first_column); }
+            | TYPE IDLIST ';' { $$ = new Declaration($1, $2, null, this._$.first_line, this._$.first_column); }
             ;
 
-IDLIST : IDLIST ',' 'identifier'
-       | 'identifier'
+IDLIST : IDLIST ',' 'identifier' { $1.push($2); $$ = $1; }
+       | 'identifier' { $$ = [$1]; }
        ;
 
-ASSIGNMENT : 'identifier' ASSIGNMENT_EXPRESSION ';'
-           | ITERATOR ';'
+ASSIGNMENT : 'identifier' ASSIGNMENT_EXPRESSION ';'  {$$ = new Assignment($1, $2, this._$.first_line, this._$.first_column); }
+           | ITERATOR ';' {$$ = $1;}
            ;
 
-ITERATOR : 'identifier' '++'
-         | 'identifier' '--'
+ITERATOR : 'identifier' '++' {$$ = new Assignment($1, $2, this._$.first_line, this._$.first_column); }
+         | 'identifier' '--' {$$ = new Assignment($1, $2, this._$.first_line, this._$.first_column); }
          ;
 
-ASSIGNMENT_EXPRESSION : '=' EXPRESSION
+ASSIGNMENT_EXPRESSION : '=' EXPRESSION { $$ = $1; }
                       ;
 
-EXPRESSION : EXPRESSION '+' EXPRESSION
-           | EXPRESSION '-' EXPRESSION
-           | EXPRESSION '*' EXPRESSION
-           | EXPRESSION '/' EXPRESSION
-           | EXPRESSION '^' EXPRESSION
-           | EXPRESSION '%' EXPRESSION
-           | EXPRESSION '<' EXPRESSION
-           | EXPRESSION '>' EXPRESSION
-           | EXPRESSION '<=' EXPRESSION
-           | EXPRESSION '>=' EXPRESSION
-           | EXPRESSION '==' EXPRESSION
-           | EXPRESSION '!=' EXPRESSION
-           | EXPRESSION '||' EXPRESSION
-           | EXPRESSION '&&' EXPRESSION
-           | '(' EXPRESSION ')'
-           | '-' EXPRESSION %prec UMINUS
-           | '!' EXPRESSION
-           | 'identifier'
-           | 'stringLiteral'
-           | 'character'
-           | 'decimal'
-           | 'true'
-           | 'false'
-           | INVOKEMETHOD
+EXPRESSION : EXPRESSION '+' EXPRESSION { $$ = ($1 + $2 + $3); }
+           | EXPRESSION '-' EXPRESSION { $$ = ($1 + $2 + $3); }
+           | EXPRESSION '*' EXPRESSION { $$ = ($1 + $2 + $3); }
+           | EXPRESSION '/' EXPRESSION { $$ = ($1 + $2 + $3); }
+           | EXPRESSION '^' EXPRESSION { $$ = ($1 + $2 + $3); }
+           | EXPRESSION '%' EXPRESSION { $$ = ($1 + $2 + $3); }
+           | EXPRESSION '<' EXPRESSION { $$ = ($1 + $2 + $3); }
+           | EXPRESSION '>' EXPRESSION { $$ = ($1 + $2 + $3); }
+           | EXPRESSION '<=' EXPRESSION { $$ = ($1 + $2 + $3); }
+           | EXPRESSION '>=' EXPRESSION { $$ = ($1 + $2 + $3); }
+           | EXPRESSION '==' EXPRESSION { $$ = ($1 + $2 + $3); }
+           | EXPRESSION '!=' EXPRESSION { $$ = ($1 + $2 + $3); }
+           | EXPRESSION '||' EXPRESSION { $$ = ($1 + $2 + $3); }
+           | EXPRESSION '&&' EXPRESSION { $$ = ($1 + $2 + $3); }
+           | '(' EXPRESSION ')'  { $$ = ($1 + $2 + $3); }
+           | '-' EXPRESSION %prec UMINUS  { $$ = ($1 + $2); }
+           | '!' EXPRESSION  { $$ = ($1 + $2); }
+           | 'identifier' { $$ = $1; }
+           | 'stringLiteral' { $$ = $1; }
+           | 'character' { $$ = $1; }
+           | 'decimal' { $$ = $1; }
+           | 'true' { $$ = $1; }
+           | 'false' { $$ = $1; }
+           | INVOKEMETHOD { $$ = $1; }
            ;
 
-INVOKEMETHOD : 'identifier' '(' INVOKEMETHODPARAMS ')'
-             | 'identifier' '(' ')'
+INVOKEMETHOD : 'identifier' '(' INVOKEMETHODPARAMS ')' { $$ = new InvokeMethod($1, $3); }
+             | 'identifier' '(' ')' { $$ = new InvokeMethod($1, null); }
              ;
 
-INVOKEMETHODPARAMS : INVOKEMETHODPARAMS ',' EXPRESSION
-                   | EXPRESSION
+INVOKEMETHODPARAMS : INVOKEMETHODPARAMS ',' EXPRESSION { $1.push($3); $$ = $1; }
+                   | EXPRESSION { $$ = $1; }
                    ;
 
-SOUT : 'System' '.' 'out' 'println' '(' ')' ';'
-     | 'System' '.' 'out' 'println' CONDITION ';'
-     | 'System' '.' 'out' 'print' '(' ')' ';'
-     | 'System' '.' 'out' 'print' CONDITION ';'
+SOUT : 'System' '.' 'out' 'println' '(' ')' ';' { $$ = new Print(Type.println, null, this._$.first_line, this._$.first_column); }
+     | 'System' '.' 'out' 'println' CONDITION ';'  { $$ = new Print(Type.println, $5, this._$.first_line, this._$.first_column); }
+     | 'System' '.' 'out' 'print' '(' ')' ';' { $$ = new Print(Type.print, null, this._$.first_line, this._$.first_column); }
+     | 'System' '.' 'out' 'print' CONDITION ';' { $$ = new Print(Type.print, $5, this._$.first_line, this._$.first_column); }
      ;
 
-CONDITION : '(' EXPRESSION ')'
+CONDITION : '(' EXPRESSION ')' { $$ = $2; }
           ;
 
 IF : 'if' CONDITION BODY

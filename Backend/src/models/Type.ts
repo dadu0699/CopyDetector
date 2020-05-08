@@ -8,6 +8,7 @@ export enum Type {
 
     break = 'break',
     case = 'case',
+    class = 'class',
     continue = 'continue',
     default = 'default',
     do = 'do while',
@@ -26,7 +27,8 @@ export enum Type {
     assignment = 'Assignment',
     iterationStatements = 'Iteration Statements',
     condition = 'Condition',
-
+    method = 'Method',
+    param = 'Param',
 
     sum = 'Sum',
     subtraction = 'Subtraction',
