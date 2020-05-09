@@ -12,12 +12,23 @@ commentMultiline        (\/\*[\s\S]*?\*\/|\/\/.*)
 identifier              (([a-zA-Z_])[a-zA-Z0-9_]*)
 digit                   ([0-9]+)
 decimal                 ({digit}("."{digit})?)
-character               (("\'")((?:\\("n"|"t"|"r"|"\\"|"\""|"\'")|(?:(?!\1).))?)\1)
-stringLiteral           (("\"")((?:\\\1|(?:(?!\1).))*)\1)
+singleQuote             ("'")
+doubleQuote             ("\"")
+character               ({singleQuote}((?:\\("n"|"t"|"r"|"\\"|"\""|"\'")|(?:(?!{singleQuote}).))?){singleQuote})
+stringLiteral           ({doubleQuote}((?:\\{doubleQuote}|(?:(?!{doubleQuote}).))*){doubleQuote})
 
 %%
 \s+                     /* skip whitespace */
 {commentMultiline}      /* skip Single Line Comment AND Multiline Comment */
+
+"{"                     return '{'
+"}"                     return '}'
+"("                     return '('
+")"                     return ')'
+","                     return ','
+"."                     return '.'
+":"                     return ':'
+";"                     return ';'
 
 "boolean"               return 'boolean'
 "break"                 return 'break'
@@ -35,8 +46,8 @@ stringLiteral           (("\"")((?:\\\1|(?:(?!\1).))*)\1)
 "import"                return 'import'
 "int"                   return 'int'
 "out"                   return 'out'
-"print"                 return 'print'
-"println"               return 'println'
+"System.out.print"      return 'print'
+"System.out.println"    return 'println'
 "return"                return 'return'
 "String"                return 'String'
 "switch"                return 'switch'
@@ -44,36 +55,29 @@ stringLiteral           (("\"")((?:\\\1|(?:(?!\1).))*)\1)
 "true"                  return 'true'
 "void"                  return 'void'
 "while"                 return 'while'
-"{"                     return '{'
-"}"                     return '}'
-"("                     return '('
-")"                     return ')'
-","                     return ','
-"."                     return '.'
-":"                     return ':'
-";"                     return ';'
+
+"<"                     return '<'
+"<="                    return '<='
+"=="                    return '=='
+">"                     return '>'
+">="                    return '>='
+"!="                    return '!='
+"||"                    return '||'
+"&&"                    return '&&'
+"!"                     return '!'
 "="                     return '='
+"++"                    return '++'
 "+"                     return '+'
+"--"                    return '--'
 "-"                     return '-'
 "*"                     return '*'
 "/"                     return '/'
 "^"                     return '^'
 "%"                     return '%'
-"++"                    return '++'
-"--"                    return '--'
-"=="                    return '=='
-"!="                    return '!='
-">"                     return '>'
-">="                    return '>='
-"<"                     return '<'
-"<="                    return '<='
-"&&"                    return '&&'
-"||"                    return '||'
-"!"                     return '!'
 {identifier}            return 'identifier'
 {decimal}               return 'decimal'
-{character}             return 'character'
-{stringLiteral}         return 'stringLiteral'
+{character}             return 'character';
+{stringLiteral}         { yytext = yytext.substr(1,yyleng-2); return 'stringLiteral'; }
 <<EOF>>                 return 'EOF';
 
 .                       { errorList.push(new Error(idError, yylloc.first_line, yylloc.first_column, yytext, 'Unknown pattern', 'Lexical Error')); console.error('Lexical Error: ' + yytext + ' in the line ' + yylloc.first_line + ' and column ' + yylloc.first_column); idError++; }
@@ -89,7 +93,7 @@ stringLiteral           (("\"")((?:\\\1|(?:(?!\1).))*)\1)
 %left '^'
 %right '!'
 %left UMINUS
-%left '++' '--'
+%right '++' '--'
 
 %start START
 %% /* language grammar */
@@ -145,11 +149,11 @@ SENTENCES : SENTENCES SENTENCE { $1.push($2); $$ = $1; }
           | SENTENCE { $$ = [$1]; }
           ;
 
-SENTENCE : DECLARATION { $$ = {'declaration' : $1}; }
-         | ASSIGNMENT { $$ = {'assignment' : $1}; }
-         | INVOKEMETHOD ';'
-         | SOUT
-         | IF
+SENTENCE : DECLARATION { $$ = {'declaration' : $1, 'range' : @$.range}; }
+         | ASSIGNMENT { $$ = {'assignment' : $1, 'range' : @$.range}; }
+         | INVOKEMETHOD ';' { $$ = {'method_invocation' : $1, 'range' : @$.range}; }
+         | SOUT { $$ = $1; }
+         | IF { $$ = $1; }
          | SWITCH
          | FOR
          | WHILE
@@ -167,66 +171,63 @@ IDLIST : IDLIST ',' ID { $1.push($3); $$ = $1; }
        | ID { $$ = [$1]; }
        ;
 
-ID : 'identifier' { $$ = [{'identifier': $1, 'range' : @$.range }]; }
+ID : 'identifier' { $$ = {'identifier': $1, 'range' : @$.range }; }
    ;
 
 ASSIGNMENT : 'identifier' ASSIGNMENT_EXPRESSION ';' { $$ = {'identifier': $1, 'value' : $2 }; }
-           | ITERATOR ';' { $$ = $1; }
+           | 'identifier' '++' ';' { $$ = {'identifier': $1, 'value' : $1 + ' + 1' }; }
+           | 'identifier' '--' ';' { $$ = {'identifier': $1, 'value' : $1 + ' - 1' }; }
            ;
 
-ITERATOR : 'identifier' '++' { $$ = {'identifier': $1, 'value' : identifier + '+ 1' }; }
-         | 'identifier' '--' { $$ = {'identifier': $1, 'value' : identifier + '- 1' }; }
-         ;
-
-ASSIGNMENT_EXPRESSION : '=' EXPRESSION
+ASSIGNMENT_EXPRESSION : '=' EXPRESSION { $$ = $2; }
                       ;
 
-EXPRESSION : EXPRESSION '+' EXPRESSION
-           | EXPRESSION '-' EXPRESSION
-           | EXPRESSION '*' EXPRESSION
-           | EXPRESSION '/' EXPRESSION
-           | EXPRESSION '^' EXPRESSION
-           | EXPRESSION '%' EXPRESSION
-           | EXPRESSION '<' EXPRESSION
-           | EXPRESSION '>' EXPRESSION
-           | EXPRESSION '<=' EXPRESSION
-           | EXPRESSION '>=' EXPRESSION
-           | EXPRESSION '==' EXPRESSION
-           | EXPRESSION '!=' EXPRESSION
-           | EXPRESSION '||' EXPRESSION
-           | EXPRESSION '&&' EXPRESSION
-           | '(' EXPRESSION ')'
-           | '-' EXPRESSION %prec UMINUS
-           | '!' EXPRESSION
-           | 'identifier'
-           | 'stringLiteral'
-           | 'character'
-           | 'decimal'
-           | 'true'
-           | 'false'
-           | INVOKEMETHOD
+EXPRESSION : EXPRESSION '+' EXPRESSION { $$ = $1 + $2 + $3; }
+           | EXPRESSION '-' EXPRESSION { $$ = $1 + $2 + $3; }
+           | EXPRESSION '*' EXPRESSION { $$ = $1 + $2 + $3; }
+           | EXPRESSION '/' EXPRESSION { $$ = $1 + $2 + $3; }
+           | EXPRESSION '^' EXPRESSION { $$ = $1 + $2 + $3; }
+           | EXPRESSION '%' EXPRESSION { $$ = $1 + $2 + $3; }
+           | EXPRESSION '<' EXPRESSION { $$ = $1 + $2 + $3; }
+           | EXPRESSION '>' EXPRESSION { $$ = $1 + $2 + $3; }
+           | EXPRESSION '<=' EXPRESSION { $$ = $1 + $2 + $3; }
+           | EXPRESSION '>=' EXPRESSION { $$ = $1 + $2 + $3; }
+           | EXPRESSION '==' EXPRESSION { $$ = $1 + $2 + $3; }
+           | EXPRESSION '!=' EXPRESSION { $$ = $1 + $2 + $3; }
+           | EXPRESSION '||' EXPRESSION { $$ = $1 + $2 + $3; }
+           | EXPRESSION '&&' EXPRESSION { $$ = $1 + $2 + $3; }
+           | '(' EXPRESSION ')' { $$ = $1 + $2 + $3; }
+           | '-' EXPRESSION %prec UMINUS { $$ = $1 + $2; }
+           | '!' EXPRESSION { $$ = $1 + $2; }
+           | 'identifier'  { $$ = $1; }
+           | 'stringLiteral' { $$ = $1; }
+           | 'character'  { $$ = $1; }
+           | 'decimal'  { $$ = $1; }
+           | 'true'  { $$ = $1; }
+           | 'false'  { $$ = $1; }
+           | INVOKEMETHOD  { $$ = $1; }
            ;
 
-INVOKEMETHOD : 'identifier' '(' INVOKEMETHODPARAMS ')'
-             | 'identifier' '(' ')'
+INVOKEMETHOD : 'identifier' '(' ')' { $$ = { 'method_identifier' : $1, 'params' : [] }; }
+             | 'identifier' '(' INVOKEMETHODPARAMS ')' { $$ = { 'method_identifier' : $1, 'params' : $3 }; }
              ;
 
-INVOKEMETHODPARAMS : INVOKEMETHODPARAMS ',' EXPRESSION
-                   | EXPRESSION
+INVOKEMETHODPARAMS : INVOKEMETHODPARAMS ',' EXPRESSION { $1.push($3); $$ = $1; }
+                   | EXPRESSION { $$ = [$1]; }
                    ;
 
-SOUT : 'System' '.' 'out' 'println' '(' ')' ';'
-     | 'System' '.' 'out' 'println' CONDITION ';'
-     | 'System' '.' 'out' 'print' '(' ')' ';'
-     | 'System' '.' 'out' 'print' CONDITION ';'
+SOUT : 'print' '(' ')' ';' { $$ = { 'print' : [] }; }
+     | 'println' '(' ')' ';' { $$ = { 'println' : [] }; }
+     | 'print' CONDITION ';' { $$ = { 'print' : $2 }; }
+     | 'println' CONDITION ';' { $$ = { 'println' : $2 }; }
      ;
 
-CONDITION : '(' EXPRESSION ')'
+CONDITION : '(' EXPRESSION ')' { $$ = $2; }
           ;
 
-IF : 'if' CONDITION BODY
-   | 'if' CONDITION BODY 'else' IF
-   | 'if' CONDITION BODY 'else' BODY
+IF : 'if' CONDITION BODY { $$ = { 'if' : { 'condition' : $2, 'sentences' : $3 } }; }
+   | 'if' CONDITION BODY 'else' IF { $$ = { 'if' : { 'condition' : $2, 'sentences' : $3 }, 'else': $5 }; }
+   | 'if' CONDITION BODY 'else' BODY { $$ = { 'if' : { 'condition' : $2, 'sentences' : $3 }, 'else': $5 }; }
    ;
 
 SWITCH : 'switch' CONDITION '{' CASE DEFAULT '}'
@@ -248,6 +249,10 @@ DEFAULT : 'default' ':' SENTENCES
 FOR : 'for' '(' TYPE 'identifier' ASSIGNMENT_EXPRESSION ';' EXPRESSION ';' ITERATOR ')' BODY
     | 'for' '(' 'identifier' ASSIGNMENT_EXPRESSION ';' EXPRESSION ';' ITERATOR ')' BODY
     ;
+
+ITERATOR : 'identifier' '++'
+         | 'identifier' '--'
+         ;
 
 WHILE : 'while' CONDITION BODY
       ;
