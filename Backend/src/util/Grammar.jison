@@ -3,6 +3,8 @@
 
     var errorList = [];
     var idError = 1;
+    var returnExpression = false;
+    var returnSentence = false;
 %}
 
 /* lexical grammar */
@@ -80,7 +82,7 @@ stringLiteral           ({doubleQuote}((?:\\{doubleQuote}|(?:(?!{doubleQuote}).)
 {stringLiteral}         { yytext = yytext.substr(1,yyleng-2); return 'stringLiteral'; }
 <<EOF>>                 return 'EOF';
 
-.                       { errorList.push(new Error(idError, yylloc.first_line, yylloc.first_column, yytext, 'Unknown pattern', 'Lexical Error')); console.error('Lexical Error: ' + yytext + ' in the line ' + yylloc.first_line + ' and column ' + yylloc.first_column); idError++; }
+.                       { errorList.push(new Error(idError, 'Lexical Error', yylloc.first_line, yylloc.first_column, 'Unknown pattern: ' + yytext)); console.error('Lexical Error: ' + yytext + ' in the line ' + yylloc.first_line + ' and column ' + yylloc.first_column); idError++; }
 /lex
 
 /* operator associations and precedence */
@@ -101,7 +103,7 @@ stringLiteral           ({doubleQuote}((?:\\{doubleQuote}|(?:(?!{doubleQuote}).)
 START : IMPORT CLASS 'EOF'  { return $2 }
       | CLASS 'EOF'         { return $1 }
       | 'EOF'
-      | error               { errorList.push(new Error(idError, this._$.first_line, this._$.first_column, yytext, '', 'Syntactic error')); console.error('Syntactic error: ' + yytext + ' in the line ' + this._$.first_line + ' and column ' + this._$.first_column); idError++; }
+      | error               { errorList.push(new Error(idError, 'Syntactic error', this._$.first_line, this._$.first_column, yytext)); console.error('Syntactic error: ' + yytext + ' in the line ' + this._$.first_line + ' and column ' + this._$.first_column); idError++; }
       ;
 
 IMPORTS : IMPORTS IMPORT    { $1.push($2); $$ = $1; }
@@ -121,10 +123,10 @@ BODYCLASS : BODYCLASS METHOD            { $1.push($2); $$ = $1; }
           | DECLARATION                 { $$ = [$1]; }
           ;
 
-METHOD : 'void' 'identifier' '(' ')' BODY           { $$ = {'method': $2, 'type': $1, 'method_params': [], 'method_content': $5 }; }
-       | TYPE 'identifier' '(' ')' BODY             { $$ = {'method': $2, 'type': $1, 'method_params': [], 'method_content': $5 }; }
-       | 'void' 'identifier' '(' PARAMS ')' BODY    { $$ = {'method': $2, 'type': $1, 'method_params': $4, 'method_content': $6 }; }
-       | TYPE 'identifier' '(' PARAMS ')' BODY      { $$ = {'method': $2, 'type': $1, 'method_params': $4, 'method_content': $6 }; }
+METHOD : 'void' 'identifier' '(' ')' BODY           { $$ = {'method': $2, 'type': $1, 'method_params': [], 'method_content': $5 }; if(returnSentence && returnExpression) { errorList.push(new Error(idError, 'Syntactic error', this._$.first_line, this._$.first_column, 'Unexpected return value')); console.error('Syntactic error: Unexpected return value in the line ' + this._$.first_line + ' and column ' + this._$.first_column); idError++; } returnSentence = false; }
+       | TYPE 'identifier' '(' ')' BODY             { $$ = {'method': $2, 'type': $1, 'method_params': [], 'method_content': $5 }; if(returnSentence && !returnExpression) { errorList.push(new Error(idError, 'Syntactic error', this._$.first_line, this._$.first_column, 'Unexpected return value')); console.error('Syntactic error: Missing return value ' + this._$.first_line + ' and column ' + this._$.first_column); idError++; } returnSentence = false; }
+       | 'void' 'identifier' '(' PARAMS ')' BODY    { $$ = {'method': $2, 'type': $1, 'method_params': $4, 'method_content': $6 }; if(returnSentence && returnExpression) { errorList.push(new Error(idError, 'Syntactic error', this._$.first_line, this._$.first_column, 'Unexpected return value')); console.error('Syntactic error: Unexpected return value in the line ' + this._$.first_line + ' and column ' + this._$.first_column); idError++; } returnSentence = false; }
+       | TYPE 'identifier' '(' PARAMS ')' BODY      { $$ = {'method': $2, 'type': $1, 'method_params': $4, 'method_content': $6 }; if(returnSentence && !returnExpression) { errorList.push(new Error(idError, 'Syntactic error', this._$.first_line, this._$.first_column, 'Unexpected return value')); console.error('Syntactic error: Missing return value ' + this._$.first_line + ' and column ' + this._$.first_column); idError++; } returnSentence = false; }
        ;
 
 TYPE : 'int'        { $$ = 'int'; }
@@ -262,8 +264,8 @@ WHILE : 'while' CONDITION BODY      { $$ = { 'condition' : $2, 'sentences' : $3 
 DOWHILE : 'do' BODY 'while' CONDITION ';'  { $$ = { 'sentences' : $2, 'while' : $4 }; }
         ;
 
-RETURN : 'return' ';'               { $$ = ''; }
-	   | 'return' EXPRESSION ';'    { $$ = $2; }
+RETURN : 'return' ';'               { $$ = ''; returnExpression = false; returnSentence = true; }
+	   | 'return' EXPRESSION ';'    { $$ = $2; returnExpression = true; returnSentence = true; }
 	   ;
 
 BREAK : 'break' ';'
