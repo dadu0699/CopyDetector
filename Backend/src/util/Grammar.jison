@@ -1,10 +1,16 @@
 %{
     const { Error } = require('../models/Error');
 
-    var errorList = [];
     var idError = 1;
+    var errorLine = 0;
+    var errorcolumn = 0;
+    var errorList = [];
+
     var returnExpression = false;
     var returnSentence = false;
+
+    var breakCounter = 0;
+    var continueCounter = 0;
 %}
 
 /* lexical grammar */
@@ -123,10 +129,10 @@ BODYCLASS : BODYCLASS METHOD            { $1.push($2); $$ = $1; }
           | DECLARATION                 { $$ = [$1]; }
           ;
 
-METHOD : 'void' 'identifier' '(' ')' BODY           { $$ = {'method': $2, 'type': $1, 'method_params': [], 'method_content': $5 }; if(returnSentence && returnExpression) { errorList.push(new Error(idError, 'Syntactic error', this._$.first_line, this._$.first_column, 'Unexpected return value')); console.error('Syntactic error: Unexpected return value in the line ' + this._$.first_line + ' and column ' + this._$.first_column); idError++; } returnSentence = false; }
-       | TYPE 'identifier' '(' ')' BODY             { $$ = {'method': $2, 'type': $1, 'method_params': [], 'method_content': $5 }; if(returnSentence && !returnExpression) { errorList.push(new Error(idError, 'Syntactic error', this._$.first_line, this._$.first_column, 'Unexpected return value')); console.error('Syntactic error: Missing return value ' + this._$.first_line + ' and column ' + this._$.first_column); idError++; } returnSentence = false; }
-       | 'void' 'identifier' '(' PARAMS ')' BODY    { $$ = {'method': $2, 'type': $1, 'method_params': $4, 'method_content': $6 }; if(returnSentence && returnExpression) { errorList.push(new Error(idError, 'Syntactic error', this._$.first_line, this._$.first_column, 'Unexpected return value')); console.error('Syntactic error: Unexpected return value in the line ' + this._$.first_line + ' and column ' + this._$.first_column); idError++; } returnSentence = false; }
-       | TYPE 'identifier' '(' PARAMS ')' BODY      { $$ = {'method': $2, 'type': $1, 'method_params': $4, 'method_content': $6 }; if(returnSentence && !returnExpression) { errorList.push(new Error(idError, 'Syntactic error', this._$.first_line, this._$.first_column, 'Unexpected return value')); console.error('Syntactic error: Missing return value ' + this._$.first_line + ' and column ' + this._$.first_column); idError++; } returnSentence = false; }
+METHOD : 'void' 'identifier' '(' ')' BODY           { $$ = {'method': $2, 'type': $1, 'method_params': [], 'method_content': $5 }; if(returnSentence && returnExpression) { errorList.push(new Error(idError, 'Syntactic error', errorLine, errorcolumn, 'Unexpected return value')); console.error('Syntactic error: Unexpected return value in the line ' + errorLine + ' and column ' + errorcolumn); idError++; } returnSentence = false; if(breakCounter>0 || continueCounter>0) { errorList.push(new Error(idError, 'Syntactic error', errorLine, errorcolumn, 'No enclosing loop out of which to break or continue')); console.error('Syntactic error: No enclosing loop out of which to break or continue in the line ' + errorLine + ' and column ' + errorcolumn); idError++; } breakCounter = 0; continueCounter = 0; }
+       | TYPE 'identifier' '(' ')' BODY             { $$ = {'method': $2, 'type': $1, 'method_params': [], 'method_content': $5 }; if(returnSentence && !returnExpression) { errorList.push(new Error(idError, 'Syntactic error', errorLine, errorcolumn, 'Unexpected return value')); console.error('Syntactic error: Missing return value ' + errorLine + ' and column ' + errorcolumn); idError++; } returnSentence = false; if(breakCounter>0 || continueCounter>0) { errorList.push(new Error(idError, 'Syntactic error', errorLine, errorcolumn, 'No enclosing loop out of which to break or continue')); console.error('Syntactic error: No enclosing loop out of which to break or continue in the line ' + errorLine + ' and column ' + errorcolumn); idError++; } breakCounter = 0; continueCounter = 0; }
+       | 'void' 'identifier' '(' PARAMS ')' BODY    { $$ = {'method': $2, 'type': $1, 'method_params': $4, 'method_content': $6 }; if(returnSentence && returnExpression) { errorList.push(new Error(idError, 'Syntactic error', errorLine, errorcolumn, 'Unexpected return value')); console.error('Syntactic error: Unexpected return value in the line ' + errorLine + ' and column ' + errorcolumn); idError++; } returnSentence = false; if(breakCounter>0 || continueCounter>0) { errorList.push(new Error(idError, 'Syntactic error', errorLine, errorcolumn, 'No enclosing loop out of which to break or continue')); console.error('Syntactic error: No enclosing loop out of which to break or continue in the line ' + errorLine + ' and column ' + errorcolumn); idError++; } breakCounter = 0; continueCounter = 0; }
+       | TYPE 'identifier' '(' PARAMS ')' BODY      { $$ = {'method': $2, 'type': $1, 'method_params': $4, 'method_content': $6 }; if(returnSentence && !returnExpression) { errorList.push(new Error(idError, 'Syntactic error', errorLine, errorcolumn, 'Unexpected return value')); console.error('Syntactic error: Missing return value ' + errorLine + ' and column ' + errorcolumn); idError++; } returnSentence = false; if(breakCounter>0 || continueCounter>0) { errorList.push(new Error(idError, 'Syntactic error', errorLine, errorcolumn, 'No enclosing loop out of which to break or continue')); console.error('Syntactic error: No enclosing loop out of which to break or continue in the line ' + errorLine + ' and column ' + errorcolumn); idError++; } breakCounter = 0; continueCounter = 0; }
        ;
 
 TYPE : 'int'        { $$ = 'int'; }
@@ -156,10 +162,10 @@ SENTENCE : DECLARATION          { $$ = { 'declaration' : $1, 'range' : @$.range 
          | INVOKEMETHOD ';'     { $$ = { 'method_invocation' : $1, 'range' : @$.range }; }
          | SOUT                 { $$ = $1; }
          | IF                   { $$ = $1; }
-         | SWITCH               { $$ = { 'switch' : $1, 'range' : @$.range }; }
-         | FOR                  { $$ = { 'for' : $1, 'range' : @$.range }; }
-         | WHILE                { $$ = { 'while' : $1, 'range' : @$.range }; }
-         | DOWHILE              { $$ = { 'do' : $1, 'range' : @$.range }; }
+         | SWITCH               { $$ = { 'switch' : $1, 'range' : @$.range }; breakCounter--; continueCounter--; }
+         | FOR                  { $$ = { 'for' : $1, 'range' : @$.range }; breakCounter--; continueCounter--; }
+         | WHILE                { $$ = { 'while' : $1, 'range' : @$.range }; breakCounter--; continueCounter--; }
+         | DOWHILE              { $$ = { 'do' : $1, 'range' : @$.range }; breakCounter--; continueCounter--; }
          | RETURN               { $$ = { 'return' : $1, 'range' : @$.range }; }
          | BREAK                { $$ = 'break'; }
          | CONTINUE             { $$ = 'continue'; }
@@ -264,12 +270,12 @@ WHILE : 'while' CONDITION BODY      { $$ = { 'condition' : $2, 'sentences' : $3 
 DOWHILE : 'do' BODY 'while' CONDITION ';'  { $$ = { 'sentences' : $2, 'while' : $4 }; }
         ;
 
-RETURN : 'return' ';'               { $$ = ''; returnExpression = false; returnSentence = true; }
-	   | 'return' EXPRESSION ';'    { $$ = $2; returnExpression = true; returnSentence = true; }
+RETURN : 'return' ';'               { $$ = ''; returnExpression = false; returnSentence = true; errorLine = this._$.first_line; errorcolumn = this._$.first_column; }
+	   | 'return' EXPRESSION ';'    { $$ = $2; returnExpression = true; returnSentence = true; errorLine = this._$.first_line; errorcolumn = this._$.first_column; }
 	   ;
 
-BREAK : 'break' ';'
+BREAK : 'break' ';' { breakCounter++; errorLine = this._$.first_line; errorcolumn = this._$.first_column; }
 	  ;
 
-CONTINUE : 'continue' ';'
+CONTINUE : 'continue' ';' { continueCounter++; errorLine = this._$.first_line; errorcolumn = this._$.first_column; }
 	     ;
