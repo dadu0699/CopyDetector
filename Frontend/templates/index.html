@@ -1,14 +1,66 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html lang="es">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+
+    <link rel="stylesheet" href="//stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Roboto:300,400,500&display=swap">
+    <link rel="stylesheet" href="//fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="/templates/assets/css/style.css">
+
+    <link rel="stylesheet" href="/templates/assets/codemirror/lib/codemirror.css">
+    <link rel="stylesheet" href="/templates/assets/codemirror/theme/dracula.css">
+    <title>Copy Detector</title>
 </head>
 
 <body>
-    <h1>Hola Mundo!</h1>
+    <nav class="navbar fixed-top navbar-dark py-0 bg-dark navbar-expand-lg py-md-0" style="height: 40px;">
+        <label class="navbar-brand">Translator</label>
+    </nav>
+    <br>
+    <div class="container-fluid row" style="height: 15px;"></div>
+    <br>
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12 col-lg-6">
+                <textarea id="principalEditor"></textarea>
+            </div>
+
+            <div class="col-12 d-block d-sm-block d-md-block d-lg-none"><br></div>
+
+            <div class="col-12 col-lg-6">
+            </div>
+        </div>
+        <br>
+
+        <div class="row">
+            <div class="col-12 col-lg-6">
+            </div>
+
+            <div class="col-12 d-block d-sm-block d-md-block d-lg-none"><br><br></div>
+
+            <div class="col-12 col-lg-6">
+            </div>
+        </div>
+        <br>
+    </div>
+
+
+
+    <!-- Optional JavaScript -->
+    <script src="//code.jquery.com/jquery-3.4.1.slim.min.js"></script>
+    <script src="//cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+    <script src="//stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+
+    <script type="application/javascript" src="/templates/assets/codemirror/lib/codemirror.js"></script>
+    <script type="application/javascript" src="/templates/assets/codemirror/mode/clike/clike.js"></script>
+    <script type="application/javascript" src="/templates/assets/codemirror/addon/edit/closebrackets.js"></script>
+    <script type="application/javascript" src="/templates/assets/js/index.js"></script>
 </body>
 
 </html>
