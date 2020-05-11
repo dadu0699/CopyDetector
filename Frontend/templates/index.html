@@ -6,20 +6,21 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-
+    <!-- Bootstrap -->
     <link rel="stylesheet" href="//stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
     <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Roboto:300,400,500&display=swap">
     <link rel="stylesheet" href="//fonts.googleapis.com/icon?family=Material+Icons">
-    <link rel="stylesheet" href="/templates/assets/css/style.css">
-
+    <!-- CodeMirror -->
     <link rel="stylesheet" href="/templates/assets/codemirror/lib/codemirror.css">
     <link rel="stylesheet" href="/templates/assets/codemirror/theme/dracula.css">
+    <!-- Custom -->
+    <link rel="stylesheet" href="/templates/assets/css/style.css">
     <title>Copy Detector</title>
 </head>
 
 <body>
     <nav class="navbar fixed-top navbar-dark py-0 bg-dark navbar-expand-lg py-md-0" style="height: 40px;">
-        <label class="navbar-brand">Translator</label>
+        <label class="navbar-brand">Copy Detector</label>
     </nav>
     <br>
     <div class="container-fluid row" style="height: 15px;"></div>
@@ -34,23 +35,28 @@
             <div class="col-12 d-block d-sm-block d-md-block d-lg-none"><br></div>
 
             <div class="col-12 col-lg-6">
+                <textarea id="comparatorEditor"></textarea>
             </div>
         </div>
         <br>
+
+        <div class="col-sm-4">
+            <div id="treeview" class="treeview">
+            </div>
+        </div>
+
 
         <div class="row">
             <div class="col-12 col-lg-6">
             </div>
-
             <div class="col-12 d-block d-sm-block d-md-block d-lg-none"><br><br></div>
 
             <div class="col-12 col-lg-6">
+                <textarea id="treeEditor"></textarea>
             </div>
         </div>
         <br>
     </div>
-
-
 
     <!-- Optional JavaScript -->
     <script src="//code.jquery.com/jquery-3.4.1.slim.min.js"></script>
@@ -59,7 +65,11 @@
 
     <script type="application/javascript" src="/templates/assets/codemirror/lib/codemirror.js"></script>
     <script type="application/javascript" src="/templates/assets/codemirror/mode/clike/clike.js"></script>
+    <script type="application/javascript" src="/templates/assets/codemirror/mode/javascript/javascript.js"></script>
     <script type="application/javascript" src="/templates/assets/codemirror/addon/edit/closebrackets.js"></script>
+
+    <script type="application/javascript" src="/templates/assets/js/json-treeify.min.js"></script>
+
     <script type="application/javascript" src="/templates/assets/js/index.js"></script>
 </body>
 

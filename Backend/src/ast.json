@@ -1,0 +1,470 @@
+{
+  "class": "entradaCompleta",
+  "class_content": [
+    {
+      "method": "metodo",
+      "type": "int",
+      "method_params": [
+        {
+          "type": "int",
+          "identifier": "a"
+        },
+        {
+          "type": "int",
+          "identifier": "d"
+        }
+      ],
+      "method_content": [
+        {
+          "declaration": {
+            "type": "String",
+            "identifiers": [
+              {
+                "identifier": "s"
+              }
+            ],
+            "value": "sdaa\\'\\\""
+          }
+        },
+        {
+          "declaration": {
+            "type": "int",
+            "id_list": [
+              {
+                "identifier": "prueba"
+              },
+              {
+                "identifier": "prueba1"
+              }
+            ]
+          }
+        },
+        {
+          "println": []
+        },
+        {
+          "declaration": {
+            "type": "int",
+            "identifiers": [
+              {
+                "identifier": "prueba2"
+              }
+            ],
+            "value": "2+3*3+(3*3)"
+          }
+        },
+        {
+          "print": "'\\n'"
+        },
+        {
+          "declaration": {
+            "type": "int",
+            "id_list": [
+              {
+                "identifier": "prueba3"
+              }
+            ]
+          }
+        },
+        {
+          "assignment": {
+            "identifier": "prueba2",
+            "value": "2"
+          }
+        }
+      ]
+    },
+    {
+      "method": "main",
+      "type": "void",
+      "method_params": [],
+      "method_content": [
+        {
+          "declaration": {
+            "type": "String",
+            "id_list": [
+              {
+                "identifier": "cadena"
+              }
+            ]
+          }
+        },
+        {
+          "method_invocation": {
+            "method_identifier": "metodo2",
+            "params": []
+          }
+        },
+        {
+          "declaration": {
+            "type": "char",
+            "identifiers": [
+              {
+                "identifier": "b"
+              }
+            ],
+            "value": "'2'"
+          }
+        },
+        {
+          "print": []
+        },
+        {
+          "switch": {
+            "condition": "nuevo",
+            "case_sentences": [
+              {
+                "expression": "1",
+                "sentences": [
+                  {
+                    "assignment": {
+                      "identifier": "a",
+                      "value": "2"
+                    }
+                  },
+                  {
+                    "declaration": {
+                      "type": "String",
+                      "identifiers": [
+                        {
+                          "identifier": "w"
+                        }
+                      ],
+                      "value": "as"
+                    }
+                  },
+                  {
+                    "declaration": {
+                      "type": "int",
+                      "id_list": [
+                        {
+                          "identifier": "b"
+                        },
+                        {
+                          "identifier": "c"
+                        },
+                        {
+                          "identifier": "d"
+                        }
+                      ]
+                    }
+                  }
+                ]
+              },
+              {
+                "expression": "2",
+                "sentences": [
+                  {
+                    "do": {
+                      "sentences": [
+                        {
+                          "assignment": {
+                            "identifier": "numero",
+                            "value": "10"
+                          }
+                        },
+                        {
+                          "assignment": {
+                            "identifier": "digitos",
+                            "value": "digitos + 1"
+                          }
+                        }
+                      ],
+                      "while": "numero>0"
+                    }
+                  }
+                ]
+              }
+            ],
+            "default": {
+              "sentences": [
+                {
+                  "if": {
+                    "condition": "true",
+                    "sentences": [
+                      {
+                        "print": []
+                      },
+                      "break"
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "method": "metodo2",
+      "type": "String",
+      "method_params": [
+        {
+          "type": "double",
+          "identifier": "b"
+        }
+      ],
+      "method_content": [
+        {
+          "assignment": {
+            "identifier": "a",
+            "value": "a + 1"
+          }
+        },
+        {
+          "method_invocation": {
+            "method_identifier": "metodo",
+            "params": [
+              "a",
+              "b"
+            ]
+          }
+        },
+        {
+          "if": {
+            "condition": "true",
+            "sentences": [
+              {
+                "print": []
+              },
+              {
+                "if": {
+                  "condition": "false",
+                  "sentences": [
+                    {
+                      "assignment": {
+                        "identifier": "b",
+                        "value": "hola"
+                      }
+                    }
+                  ]
+                },
+                "else": [
+                  {
+                    "declaration": {
+                      "type": "int",
+                      "identifiers": [
+                        {
+                          "identifier": "a"
+                        }
+                      ],
+                      "value": "2"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          "else": {
+            "if": {
+              "condition": "adios",
+              "sentences": [
+                {
+                  "print": "adios+2"
+                },
+                {
+                  "println": "adios+2*!no"
+                }
+              ]
+            },
+            "else": [
+              {
+                "declaration": {
+                  "type": "int",
+                  "identifiers": [
+                    {
+                      "identifier": "a"
+                    }
+                  ],
+                  "value": "2"
+                }
+              },
+              {
+                "return": "adios"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "method": "casiCompleto",
+      "type": "void",
+      "method_params": [],
+      "method_content": [
+        {
+          "for": {
+            "initializer": {
+              "type": "int",
+              "identifier": "i",
+              "value": "0"
+            },
+            "condition": "i<5",
+            "iterator": {
+              "identifier": "i",
+              "value": "i + 1"
+            },
+            "sentences": [
+              {
+                "switch": {
+                  "condition": "nuevo",
+                  "case_sentences": [
+                    {
+                      "expression": "1",
+                      "sentences": [
+                        {
+                          "assignment": {
+                            "identifier": "a",
+                            "value": "2"
+                          }
+                        },
+                        {
+                          "declaration": {
+                            "type": "String",
+                            "identifiers": [
+                              {
+                                "identifier": "w"
+                              }
+                            ],
+                            "value": "as"
+                          }
+                        },
+                        {
+                          "declaration": {
+                            "type": "int",
+                            "id_list": [
+                              {
+                                "identifier": "b"
+                              },
+                              {
+                                "identifier": "c"
+                              },
+                              {
+                                "identifier": "d"
+                              }
+                            ]
+                          }
+                        },
+                        {
+                          "do": {
+                            "sentences": [
+                              {
+                                "assignment": {
+                                  "identifier": "a",
+                                  "value": "a + 1"
+                                }
+                              },
+                              {
+                                "if": {
+                                  "condition": "a==10",
+                                  "sentences": [
+                                    {
+                                      "assignment": {
+                                        "identifier": "a",
+                                        "value": "20"
+                                      }
+                                    },
+                                    "break"
+                                  ]
+                                }
+                              }
+                            ],
+                            "while": "a!=0"
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "expression": "2",
+                      "sentences": [
+                        {
+                          "if": {
+                            "condition": "true",
+                            "sentences": [
+                              {
+                                "print": []
+                              },
+                              {
+                                "if": {
+                                  "condition": "false",
+                                  "sentences": [
+                                    {
+                                      "assignment": {
+                                        "identifier": "b",
+                                        "value": "hola"
+                                      }
+                                    }
+                                  ]
+                                },
+                                "else": [
+                                  {
+                                    "declaration": {
+                                      "type": "int",
+                                      "identifiers": [
+                                        {
+                                          "identifier": "a"
+                                        }
+                                      ],
+                                      "value": "2"
+                                    }
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          "else": {
+                            "if": {
+                              "condition": "adios",
+                              "sentences": [
+                                {
+                                  "print": "adios+2"
+                                },
+                                {
+                                  "println": "adios+2*!no"
+                                }
+                              ]
+                            },
+                            "else": [
+                              {
+                                "declaration": {
+                                  "type": "int",
+                                  "identifiers": [
+                                    {
+                                      "identifier": "a"
+                                    }
+                                  ],
+                                  "value": "2"
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  ],
+                  "default": {
+                    "sentences": [
+                      {
+                        "if": {
+                          "condition": "true",
+                          "sentences": [
+                            {
+                              "print": []
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "return": ""
+        }
+      ]
+    }
+  ]
+}
