@@ -1,53 +1,53 @@
 import { ClassSController } from "./ClassSContoller";
+import { ClassS } from "../models/ClassS";
+import { MethodS } from "../models/MethodS";
 
 export class CopyVController {
-    private principal: ClassSController;
-    private secondary: ClassSController;
+    private principal: ClassS;
+    private secondary: ClassS;
 
     constructor(data1: string, data2: string) {
-        this.principal = new ClassSController(data1);
-        this.secondary = new ClassSController(data2);
+        this.principal = new ClassSController(data1).getData();
+        this.secondary = new ClassSController(data2).getData();
 
         this.copyClassReport();
+        console.log('\n------------------------------------------------------------------------\n')
+        this.copyFunctionReport();
     }
 
     public copyClassReport(): void {
-        let principal = this.principal.getData();
-        let secondary = this.secondary.getData();
-        let copyClass = false;
+        let isCopyClass = false;
 
-        if ((principal.getName() !== secondary.getName())
-            || principal.getMethods().length !== secondary.getMethods().length) {
-            copyClass = true;
+        if ((this.principal.getName() === this.secondary.getName())
+            && this.principal.getMethods().length === this.secondary.getMethods().length) {
+            this.principal.getMethods().forEach(element => {
+                for (let i = 0; i < this.secondary.getMethods().length; i++) {
+                    if (element.getName() === this.secondary.getMethods()[i].getName()) {
+                        isCopyClass = true;
+                        break;
+                    }
+
+                    if (i === (this.secondary.getMethods().length - 1)
+                        && (element.getName() !== this.secondary.getMethods()[i].getName())) {
+                        isCopyClass = false;
+                    }
+                }
+
+                if (isCopyClass) {
+                    return;
+                }
+            });
         }
 
-        principal.getMethods().forEach(element => {
-            for (let index = 0; index < secondary.getMethods().length; index++) {
-                if (element.getName() === secondary.getMethods()[index].getName()) {
-                    copyClass = true;
-                    break;
-                }
-
-                if (index === (secondary.getMethods().length - 1)
-                    && (element.getName() !== secondary.getMethods()[index].getName())) {
-                    copyClass = false;
-                }
-            }
-
-            if (copyClass) {
-                return;
-            }
-        });
-
-        if (copyClass) {
+        if (isCopyClass) {
             let methodsname: any = [];
-            principal.getMethods().forEach(element => {
+            this.principal.getMethods().forEach(element => {
                 methodsname.push({ 'method name': element.getName() });
             });
             let copyClassData = {
-                'class name': principal.getName(),
+                'class name': this.principal.getName(),
                 'methods': methodsname,
-                'number of methods': principal.getMethods().length
+                'number of methods': this.principal.getMethods().length
             }
 
             console.log('It\'s a copy of the class');
@@ -58,6 +58,53 @@ export class CopyVController {
     }
 
     public copyFunctionReport(): void {
+        let methods: Array<MethodS> = [];
+        let isCopyMethod = false;
 
+        if (this.principal.getName() === this.secondary.getName()) {
+            this.principal.getMethods().forEach(element => {
+                for (let i = 0; i < this.secondary.getMethods().length; i++) {
+                    if (element.getParams().length === this.secondary.getMethods()[i].getParams().length) {
+                        let parameterLength = element.getParams().length;
+                        if (parameterLength == 0) {
+                            isCopyMethod = true;
+                        } else {
+                            for (let j = 0; j < parameterLength; j++) {
+                                if (element.getParams()[j].getType() === this.secondary.getMethods()[i].getParams()[j].getType()) {
+                                    isCopyMethod = true;
+                                } else {
+                                    isCopyMethod = false;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+
+                    if (isCopyMethod && element.getType() == this.secondary.getMethods()[i].getType()) {
+                        if (!methods.includes(this.secondary.getMethods()[i])) {
+                            methods.push(this.secondary.getMethods()[i]);
+                        }
+                    }
+
+                    isCopyMethod = false;
+                }
+            });
+        }
+
+        let methodsData: any = [];
+        methods.forEach(element => {
+            methodsData.push({
+                'type of method': element.getType(),
+                'method name': element.getName(),
+                'parameters': element.getParams()
+            });
+        });
+        let copyMethods = {
+            'class name': this.secondary.getName(),
+            'copy methods': methodsData
+        }
+
+        console.log('Copy methods:');
+        console.log(JSON.stringify(copyMethods, null, 2));
     }
 };
