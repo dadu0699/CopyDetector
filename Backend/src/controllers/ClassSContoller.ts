@@ -16,12 +16,16 @@ export class ClassSController {
         this.identifiers = [];
 
         this.buildClass();
-        console.log(this.classS)
+        /*
+            console.log(this.classS)
+            this.classS.getMethods().forEach(s => {
+                console.log(s);
+            });
+        */
+    }
 
-        this.classS.getMethods().forEach(s => {
-            console.log(s);
-        });
-
+    public getData(): ClassS {
+        return this.classS;
     }
 
     private buildClass(): void {
@@ -115,7 +119,7 @@ export class ClassSController {
         }
     }
 
-    public fillIn(data: string): void {
+    private fillIn(data: string): void {
         let jsonData = JSON.parse(data);
 
         Object.keys(jsonData).forEach(key => {

@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { ClassSController } from '../controllers/ClassSContoller';
+import { CopyVController } from '../controllers/CopyVController';
 
 const fs = require('fs');
 const path = require('path');
@@ -17,15 +17,18 @@ class IndexRoutes {
         this.router.get('/', (req, res) => {
             try {
                 let route = path.resolve(__dirname, '../entrada.txt');
+                let route2 = path.resolve(__dirname, '../entrada2.txt');
                 let routeJSON = path.resolve(__dirname, '../ast.json');
 
                 const entrada = fs.readFileSync(route);
+                const entrada2 = fs.readFileSync(route2);
                 const ast = parser.parse(entrada.toString());
+                const ast2 = parser.parse(entrada2.toString());
 
                 fs.writeFileSync(routeJSON, JSON.stringify(ast, null, 2));
                 res.sendFile(routeJSON);
 
-                let classChecker: ClassSController = new ClassSController(JSON.stringify(ast));
+                let cp = new CopyVController(JSON.stringify(ast), JSON.stringify(ast2));
             } catch (e) {
                 console.error(e);
                 return;
