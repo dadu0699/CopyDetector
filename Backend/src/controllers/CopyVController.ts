@@ -1,6 +1,7 @@
 import { ClassSController } from "./ClassSContoller";
 import { ClassS } from "../models/ClassS";
 import { MethodS } from "../models/MethodS";
+import { VariableS } from "../models/VariableS";
 
 export class CopyVController {
     private principal: ClassS;
@@ -13,6 +14,8 @@ export class CopyVController {
         this.copyClassReport();
         console.log('\n------------------------------------------------------------------------\n')
         this.copyFunctionReport();
+        console.log('\n------------------------------------------------------------------------\n')
+        this.copyVariableReport();
     }
 
     public copyClassReport(): void {
@@ -105,6 +108,49 @@ export class CopyVController {
         }
 
         console.log('Copy methods:');
+        console.log(JSON.stringify(copyMethods, null, 2));
+    }
+
+    public copyVariableReport(): void {
+        let methods: Array<MethodS> = [];
+
+        if (this.principal.getName() === this.secondary.getName()) {
+            this.principal.getMethods().forEach(element => {
+                let method: MethodS = new MethodS();
+                method.setName(element.getName());
+                for (let i = 0; i < this.secondary.getMethods().length; i++) {
+                    if (element.getType() === this.secondary.getMethods()[i].getType()
+                        && element.getName() === this.secondary.getMethods()[i].getName()) {
+                        element.getVariables().forEach(variable => {
+                            for (let j = 0; j < this.secondary.getMethods()[i].getVariables().length; j++) {
+                                if (variable.getName() === this.secondary.getMethods()[i].getVariables()[j].getName()
+                                    && variable.getType() === this.secondary.getMethods()[i].getVariables()[j].getType()) {
+                                    method.getVariables().push(variable);
+                                }
+                            }
+                        });
+                    }
+                }
+
+                if (method.getVariables().length > 0) {
+                    methods.push(method);
+                }
+            });
+        }
+
+        let methodsData: any = [];
+        methods.forEach(element => {
+            methodsData.push({
+                'method name': element.getName(),
+                'variables': element.getVariables()
+            });
+        });
+        let copyMethods = {
+            'class name': this.secondary.getName(),
+            'methods': methodsData
+        }
+
+        console.log('Copy variables:');
         console.log(JSON.stringify(copyMethods, null, 2));
     }
 };

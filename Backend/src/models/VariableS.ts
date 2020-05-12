@@ -7,19 +7,19 @@ export class VariableS {
         this.name = name;
     }
 
-    public get Type(): string {
+    public getType(): string {
         return this.type;
     }
 
-    public set Type(type: string) {
+    public setType(type: string) {
         this.type = type;
     }
 
-    public get Name(): string {
+    public getName(): string {
         return this.name;
     }
 
-    public set Name(name: string) {
+    public setName(name: string) {
         this.name = name;
     }
 };

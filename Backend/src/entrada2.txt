@@ -7,24 +7,23 @@ import imp3;
 class entradaCompleta {
 	// Prueba
 	int metodo(int a, int d) {
-		int a=1,b,c=2;
+		int a,b,c;
 		String s = "sdaa\'\"";
-		String prueba, prueba1;
 		char ch2, ch4;
 	}
-	
+
 	void main() {
 		String cadena;
 		char b = '2';
-		
+
 		if(a) {
-			int vardentroIF;
+			int dentroIF;
 			if(s) {
-				double vardentroIF2;
+				double dentroIF2;
 			}
-			
+
 			switch (true) {
-				case 1: 
+				case 1:
 					double vardentroCase;
 			}
 		}
