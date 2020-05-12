@@ -1,24 +1,27 @@
 import { ClassS } from "../models/ClassS";
 import { MethodS } from "../models/MethodS";
 import { ParamS } from "../models/ParamS";
+import { VariableS } from "../models/VariableS";
 
 export class ClassSController {
     private classS: ClassS;
     private jsonData: any;
     private declarations: any;
+    private identifiers: any;
 
     constructor(data: string) {
         this.classS = new ClassS();
         this.jsonData = JSON.parse(data);
         this.declarations = [];
+        this.identifiers = [];
 
         this.buildClass();
         console.log(this.classS)
-        /*
-            this.classS.getMethods().forEach(s => {
-                console.log(s);
-            });
-        */
+
+        this.classS.getMethods().forEach(s => {
+            console.log(s);
+        });
+
     }
 
     private buildClass(): void {
@@ -34,10 +37,9 @@ export class ClassSController {
             methodS.setName(this.getKey('method_name', classContent[index]));
             methodS.setType(this.getKey('type', classContent[index]));
 
-            let paramsList: Array<ParamS> = this.buildParams(this.getKey('method_params', classContent[index]));
-            methodS.setParams(paramsList);
+            methodS.setParams(this.buildParams(this.getKey('method_params', classContent[index])));
 
-            this.buildVariables(this.getKey('method_content', classContent[index]));
+            methodS.setVariabes(this.buildVariables(this.getKey('method_content', classContent[index])));
 
             this.classS.getMethods().push(methodS);
         }
@@ -56,10 +58,23 @@ export class ClassSController {
         return paramsList;
     }
 
-    private buildVariables(methodContent: any): void {
+    private buildVariables(methodContent: any): Array<VariableS> {
+        let variablesList: Array<VariableS> = [];
+
         this.declarations = [];
         this.getDeclarations(methodContent);
-        console.log(this.declarations);
+        // console.log(this.declarations);
+
+        this.identifiers = [];
+        this.getIdentifiers(this.declarations);
+        // console.log(this.identifiers);
+
+        for (let index = 0; index < this.declarations.length; index++) {
+            this.identifiers[index].forEach((element: any) => {
+                variablesList.push(new VariableS(this.declarations[index].type, element.identifier))
+            });
+        }
+        return variablesList;
     }
 
     private getDeclarations(methodContent: any): void {
@@ -68,9 +83,21 @@ export class ClassSController {
             if (Array.isArray(value) || typeof value === 'object') {
                 if (key == 'declaration') {
                     // console.log(key, value);
-                    this.declarations.push(value)
+                    this.declarations.push(value);
                 }
                 this.getDeclarations(value);
+            }
+        });
+    }
+
+    private getIdentifiers(identifier: any): void {
+        Object.keys(identifier).forEach(key => {
+            var value = identifier[key];
+            if (Array.isArray(value) || typeof value === 'object') {
+                if (key == 'identifiers') {
+                    this.identifiers = this.identifiers.concat([value]);
+                }
+                this.getIdentifiers(value);
             }
         });
     }

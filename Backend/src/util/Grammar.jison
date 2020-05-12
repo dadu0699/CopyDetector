@@ -84,7 +84,7 @@ stringLiteral           ({doubleQuote}((?:\\{doubleQuote}|(?:(?!{doubleQuote}).)
 "%"                     return '%'
 {identifier}            return 'identifier'
 {decimal}               return 'decimal'
-{character}             return 'character';
+{character}             { yytext = yytext.substr(1,yyleng-2); return 'character'; }
 {stringLiteral}         { yytext = yytext.substr(1,yyleng-2); return 'stringLiteral'; }
 <<EOF>>                 return 'EOF';
 

@@ -35,7 +35,7 @@ export class MethodS {
     }
 
     public setParams(params: Array<ParamS>) {
-        this.params = params;
+        this.params = this.params.concat(params);
     }
 
     public getVariables(): Array<VariableS> {
@@ -43,6 +43,6 @@ export class MethodS {
     }
 
     public setVariabes(variables: Array<VariableS>) {
-        this.variables = variables;
+        this.variables = this.variables.concat(variables);
     }
 };

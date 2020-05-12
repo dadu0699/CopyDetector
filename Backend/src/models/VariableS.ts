@@ -1,19 +1,9 @@
 export class VariableS {
-    private name: string;
     private type: string;
-    private value: string;
+    private name: string;
 
-    constructor(name: string, type: string, value: string) {
-        this.name = name;
+    constructor(type: string, name: string, ) {
         this.type = type;
-        this.value = value;
-    }
-
-    public get Name(): string {
-        return this.name;
-    }
-
-    public set Name(name: string) {
         this.name = name;
     }
 
@@ -25,10 +15,11 @@ export class VariableS {
         this.type = type;
     }
 
-    public get Value(): string {
-        return this.value;
+    public get Name(): string {
+        return this.name;
     }
-    public set Value(value: string) {
-        this.value = value;
+
+    public set Name(name: string) {
+        this.name = name;
     }
 };

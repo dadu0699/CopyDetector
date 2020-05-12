@@ -983,7 +983,7 @@ case 53:return 9
 break;
 case 54:return 67
 break;
-case 55:return 66;
+case 55: yy_.yytext = yy_.yytext.substr(1,yy_.yyleng-2); return 66; 
 break;
 case 56: yy_.yytext = yy_.yytext.substr(1,yy_.yyleng-2); return 65; 
 break;
