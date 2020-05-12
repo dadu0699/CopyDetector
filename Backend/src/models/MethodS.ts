@@ -1,48 +1,48 @@
-import { Type } from './Type';
 import { ParamS } from './ParamS';
+import { VariableS } from "./VariableS";
 
 export class MethodS {
+    private type: string;
     private name: string;
-    private type: Type;
     private params: Array<ParamS>;
-    private returnS: string;
+    private variables: Array<VariableS>;
 
-    constructor(name: string, type: Type, params: Array<ParamS>, returnS: string) {
-        this.name = name;
-        this.type = type;
-        this.params = params;
-        this.returnS = returnS;
+    constructor() {
+        this.type = '';
+        this.name = '';
+        this.params = [];
+        this.variables = [];
     }
 
-    public get Name(): string {
-        return this.name;
-    }
-
-    public set Name(name: string) {
-        this.name = name;
-    }
-
-    public get Type(): Type {
+    public getType(): string {
         return this.type;
     }
 
-    public set Type(type: Type) {
+    public setType(type: string) {
         this.type = type;
     }
 
-    public get Params(): Array<ParamS> {
+    public getName(): string {
+        return this.name;
+    }
+
+    public setName(name: string) {
+        this.name = name;
+    }
+
+    public getParams(): Array<ParamS> {
         return this.params;
     }
 
-    public set Params(params: Array<ParamS>) {
+    public setParams(params: Array<ParamS>) {
         this.params = params;
     }
 
-    public get ReturnS(): string {
-        return this.returnS;
+    public getVariables(): Array<VariableS> {
+        return this.variables;
     }
 
-    public set ReturnS(returnS: string) {
-        this.returnS = returnS;
+    public setVariabes(variables: Array<VariableS>) {
+        this.variables = variables;
     }
 };

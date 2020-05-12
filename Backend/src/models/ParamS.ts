@@ -1,27 +1,25 @@
-import { Type } from "./Type";
-
 export class ParamS {
-    private name: string;
-    private type: Type;
+    private type: string;
+    private identifier: string;
 
-    constructor(name: string, type: Type) {
-        this.name = name;
-        this.type = type;
+    constructor() {
+        this.type = '';
+        this.identifier = '';
     }
 
-    public get Name(): string {
-        return this.name
-    }
-
-    public set Name(name: string) {
-        this.name = name;
-    }
-
-    public get Type(): Type {
+    public getType(): string {
         return this.type;
     }
 
-    public set Type(type: Type) {
+    public setType(type: string) {
         this.type = type;
+    }
+
+    public getIdentifier(): string {
+        return this.identifier
+    }
+
+    public setIdentifier(name: string) {
+        this.identifier = name;
     }
 };

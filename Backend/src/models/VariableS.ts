@@ -1,11 +1,9 @@
-import { Type } from "./Type";
-
 export class VariableS {
     private name: string;
-    private type: Type;
+    private type: string;
     private value: string;
 
-    constructor(name: string, type: Type, value: string) {
+    constructor(name: string, type: string, value: string) {
         this.name = name;
         this.type = type;
         this.value = value;
@@ -19,11 +17,11 @@ export class VariableS {
         this.name = name;
     }
 
-    public get Type(): Type {
+    public get Type(): string {
         return this.type;
     }
 
-    public set Type(type: Type) {
+    public set Type(type: string) {
         this.type = type;
     }
 

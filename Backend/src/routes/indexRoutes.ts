@@ -1,7 +1,8 @@
 import { Router } from 'express';
+import { ClassSController } from '../controllers/ClassSContoller';
 
 const fs = require('fs');
-const path = require('path')
+const path = require('path');
 const parser = require('../util/grammar.js');
 
 class IndexRoutes {
@@ -23,6 +24,8 @@ class IndexRoutes {
 
                 fs.writeFileSync(routeJSON, JSON.stringify(ast, null, 2));
                 res.sendFile(routeJSON);
+
+                let classChecker: ClassSController = new ClassSController(JSON.stringify(ast));
             } catch (e) {
                 console.error(e);
                 return;

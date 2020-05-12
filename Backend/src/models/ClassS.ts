@@ -1,38 +1,27 @@
 import { MethodS } from "./MethodS";
-import { VariableS } from "./VariableS";
 
 export class ClassS {
     private name: string;
     private methods: Array<MethodS>;
-    private variables: Array<VariableS>;
 
-    constructor(name: string, methods: Array<MethodS>, variables: Array<VariableS>) {
-        this.name = name;
-        this.methods = methods;
-        this.variables = variables;
+    constructor() {
+        this.name = '';
+        this.methods = [];
     }
 
-    public get Name(): string {
+    public getName(): string {
         return this.name;
     }
 
-    public set Name(name: string) {
+    public setName(name: string) {
         this.name = name;
     }
 
-    public get Methods(): Array<MethodS> {
+    public getMethods(): Array<MethodS> {
         return this.methods;
     }
 
-    public set Methods(methods: Array<MethodS>) {
+    public setMethods(methods: Array<MethodS>) {
         this.methods = methods;
-    }
-
-    public get Variables(): Array<VariableS> {
-        return this.variables;
-    }
-
-    public set Variabes(variables: Array<VariableS>) {
-        this.variables = variables;
     }
 };
