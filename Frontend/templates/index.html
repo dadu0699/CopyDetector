@@ -13,6 +13,10 @@
     <!-- CodeMirror -->
     <link rel="stylesheet" href="/templates/assets/codemirror/lib/codemirror.css">
     <link rel="stylesheet" href="/templates/assets/codemirror/theme/dracula.css">
+    <!-- jsTree -->
+    <link rel="stylesheet"
+        href="//www.orangehilldev.com/jstree-bootstrap-theme/demo/assets/dist/themes/proton/style.css" />
+    <link rel="stylesheet" href="/templates/assets/jsTree/themes/default/style.min.css" />
     <!-- Custom -->
     <link rel="stylesheet" href="/templates/assets/css/style.css">
     <title>Copy Detector</title>
@@ -48,12 +52,28 @@
 
         <div class="row">
             <div class="col-12 col-lg-6">
+                <textarea id="console"></textarea>
             </div>
+
             <div class="col-12 d-block d-sm-block d-md-block d-lg-none"><br><br></div>
 
             <div class="col-12 col-lg-6">
-                <textarea id="treeEditor"></textarea>
+                <div class="astPanel" id="AST">
+                    <ul>
+                        <li>Root node
+                            <ul>
+                                <li>Child node 1</li>
+                                <li>Child node 2</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
             </div>
+            <!--
+                <div class="col-12 col-lg-6">
+                    <textarea id="treeEditor"></textarea>
+                </div>
+            -->
         </div>
         <br>
     </div>
@@ -69,6 +89,9 @@
     <script type="application/javascript" src="/templates/assets/codemirror/addon/edit/closebrackets.js"></script>
 
     <script type="application/javascript" src="/templates/assets/js/json-treeify.min.js"></script>
+
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script type="application/javascript" src="/templates/assets/jsTree/jstree.min.js"></script>
 
     <script type="application/javascript" src="/templates/assets/js/index.js"></script>
 </body>
