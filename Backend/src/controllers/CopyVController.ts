@@ -1,21 +1,25 @@
 import { ClassSController } from "./ClassSContoller";
 import { ClassS } from "../models/ClassS";
 import { MethodS } from "../models/MethodS";
-import { VariableS } from "../models/VariableS";
 
 export class CopyVController {
     private principal: ClassS;
     private secondary: ClassS;
+    private ASTData: string;
 
     constructor(data1: string, data2: string) {
         this.principal = new ClassSController(data1).getData();
         this.secondary = new ClassSController(data2).getData();
+        this.ASTData = '';
 
         this.copyClassReport();
-        console.log('\n------------------------------------------------------------------------\n')
         this.copyFunctionReport();
-        console.log('\n------------------------------------------------------------------------\n')
         this.copyVariableReport();
+        this.astReport(JSON.parse(data1));
+    }
+
+    public getASTDATA(): string {
+        return this.ASTData;
     }
 
     public copyClassReport(): void {
@@ -25,7 +29,8 @@ export class CopyVController {
             && this.principal.getMethods().length === this.secondary.getMethods().length) {
             this.principal.getMethods().forEach(element => {
                 for (let i = 0; i < this.secondary.getMethods().length; i++) {
-                    if (element.getName() === this.secondary.getMethods()[i].getName()) {
+                    if (element.getName() === this.secondary.getMethods()[i].getName()
+                        && element.getType() === this.secondary.getMethods()[i].getType()) {
                         isCopyClass = true;
                         break;
                     }
@@ -36,7 +41,7 @@ export class CopyVController {
                     }
                 }
 
-                if (isCopyClass) {
+                if (!isCopyClass) {
                     return;
                 }
             });
@@ -152,5 +157,18 @@ export class CopyVController {
 
         console.log('Copy variables:');
         console.log(JSON.stringify(copyMethods, null, 2));
+    }
+
+
+    private astReport(jsonData: any): void {
+        for (const i in jsonData) {
+            if (Array.isArray(jsonData[i]) || typeof jsonData[i] === 'object') {
+                this.ASTData += ('<ul><li>' + i)
+                this.astReport(jsonData[i]);
+                this.ASTData += ('</li></ul>');
+            } else {
+                this.ASTData += ('<ul><li>' + i + ': ' + jsonData[i] + '</li></ul>');
+            }
+        }
     }
 };
