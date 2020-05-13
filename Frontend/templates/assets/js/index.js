@@ -1,3 +1,4 @@
+/* Component initialization */
 var principalEditor = CodeMirror.fromTextArea(document.getElementById('principalEditor'), {
     theme: 'dracula',
     mode: "text/x-java",
@@ -20,7 +21,7 @@ var comparatorEditor = CodeMirror.fromTextArea(document.getElementById('comparat
     matchBrackets: true
 });
 
-var console = CodeMirror.fromTextArea(document.getElementById('console'), {
+var consoleEditor = CodeMirror.fromTextArea(document.getElementById('consoleEditor'), {
     theme: 'dracula',
     lineWrapping: false,
     foldGutter: true,
@@ -31,15 +32,63 @@ var console = CodeMirror.fromTextArea(document.getElementById('console'), {
     readOnly: true
 });
 
-$('div#AST').jstree({
-    'core': {
-        'themes': {
-            'name': 'proton',
-            'responsive': true
-        }
-    },
-    "plugins": ["contextmenu"]
-});
+/* END -- Component initialization */
+
+/* Upload and read file */
+document.getElementById('input-principalFile').addEventListener('change', getPrincipalFile);
+document.getElementById('input-secondaryFile').addEventListener('change', getSecondaryFile);
+
+function getPrincipalFile(event) {
+    const input = event.target
+    if ('files' in input && input.files.length > 0) {
+        placeFileContent(
+            principalEditor, // Editor
+            input.files[0]);
+    }
+}
+
+function getSecondaryFile(event) {
+    const input = event.target
+    if ('files' in input && input.files.length > 0) {
+        placeFileContent(
+            comparatorEditor, // Editor
+            input.files[0]);
+    }
+}
+
+function placeFileContent(target, file) {
+    readFileContent(file).then(content => {
+        target.getDoc().setValue(content);
+    }).catch(error => console.log(error))
+}
+
+function readFileContent(file) {
+    const reader = new FileReader()
+    return new Promise((resolve, reject) => {
+        reader.onload = event => resolve(event.target.result);
+        reader.onerror = error => reject(error);
+        reader.readAsText(file);
+    })
+}
+/* END -- Upload and read file */
+
+/* AST */
+var astData = '<ul><li>Root node <ul><li>Child node 1</li><li>Child node 2</li><li>Child node 3</li><li>Child node 4</li></ul></li></ul>'
+document.getElementById('astButton').onclick = function () {
+    $('#astDiv').html('');
+    $('#astDiv').prepend('<div class="astPanel" id="AST">' + astData + '</div>');
+    $('#AST').jstree({
+        'core': {
+            'themes': {
+                'name': 'proton',
+                'responsive': true
+            }
+        },
+        "plugins": ["contextmenu"]
+    });
+};
+/* END -- AST */
+
 
 /*
 var treeEditor = CodeMirror.fromTextArea(document.getElementById('treeEditor'), {
@@ -60,4 +109,5 @@ let testData = {
         c: "hello world"
     }
 };
-treeEditor.getDoc().setValue(treeify(testData));*/
+treeEditor.getDoc().setValue(treeify(testData));
+*/

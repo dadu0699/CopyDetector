@@ -6,6 +6,49 @@ body {
     background-color: #191A21 !important;
 }
 
+.navbar .dropdown-menu {
+    background-color: #21222C;
+    color: #fff;
+    cursor: pointer;
+}
+
+.dropdown-item:focus,
+.dropdown-item:hover {
+    color: #21222C;
+    text-decoration: none;
+    background-color: #f8f9fa;
+}
+
+.dropdown-menu a:hover {
+    color: #21222C !important;
+    cursor: pointer;
+}
+
+.dropdown-item.active,
+.dropdown-item:active {
+    color: #fff;
+    text-decoration: none;
+    background-color: #fdfdfe;
+}
+
+.dropdown-item {
+    color: white;
+}
+
+.upload-btn-wrapper {
+    position: relative;
+    overflow: hidden;
+    display: inline-block;
+}
+
+.upload-btn-wrapper input[type=file] {
+    position: absolute;
+    left: 0;
+    top: 0;
+    opacity: 0;
+    cursor: pointer;
+}
+
 .console {
     font-size: 13px !important;
     height: 87vh !important;
@@ -22,7 +65,7 @@ body {
     background-color: #282a36 !important;
     color: #f8f8f2 !important;
     border: none;
-    padding: 0px 5px;
+    padding: 0px 2.5px;
     overflow: auto;
 }
 
@@ -43,7 +86,6 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-    -webkit-box-shadow: #191A21;
     -webkit-border-radius: 3px;
     border-radius: 3px;
 }
@@ -52,7 +94,6 @@ body {
     -webkit-border-radius: 3px;
     border-radius: 3px;
     background: #F8F8F2FF;
-    -webkit-box-shadow: #191A21;
 }
 
 ::-webkit-scrollbar-thumb:window-inactive {
