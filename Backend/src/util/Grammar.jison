@@ -106,8 +106,8 @@ stringLiteral           ({doubleQuote}((?:\\{doubleQuote}|(?:(?!{doubleQuote}).)
 %start START
 %% /* language grammar */
 
-START : IMPORTS CLASS 'EOF'     { return { 'imports': $1, 'class': $2 } }
-      | CLASS 'EOF'             { return { 'class': $1 } }
+START : IMPORTS CLASS 'EOF'     { if (errorList.length > 0) { let eL = []; eL = eL.concat(errorList); errorList = []; idError = 0; return { 'error': eL }; } return { 'imports': $1, 'class': $2 } }
+      | CLASS 'EOF'             { if (errorList.length > 0) { let eL = []; eL = eL.concat(errorList); errorList = []; idError = 0; return { 'error': eL }; } return { 'class': $1 } }
       | 'EOF'
       | error                   { errorList.push(new Error(idError, 'Syntactic error', this._$.first_line, this._$.first_column, yytext)); console.error('Syntactic error: ' + yytext + ' in the line ' + this._$.first_line + ' and column ' + this._$.first_column); idError++; }
       ;
@@ -232,6 +232,7 @@ SOUT : 'print' '(' ')' ';'          { $$ = { 'print' : [] }; }
      ;
 
 CONDITION : '(' EXPRESSION ')'      { $$ = $2; }
+          | error                   { errorList.push(new Error(idError, 'Syntactic error', this._$.first_line, this._$.first_column, yytext)); console.error('Syntactic error: ' + yytext + ' in the line ' + this._$.first_line + ' and column ' + this._$.first_column); idError++; }
           ;
 
 IF : 'if' CONDITION BODY                    { $$ = { 'if' : { 'condition' : $2, 'sentences' : $3 } }; }
