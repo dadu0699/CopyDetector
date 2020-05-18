@@ -163,7 +163,7 @@ function generateErrorReport() {
     fileContent += '<div class=\"container\"><br>';
     fileContent += '<h1>List of Errors</h1><hr>';
     fileContent += '<table id=\"example\" class=\"table table - striped table - bordered\" style=\"width: 100 % \">';
-    fileContent += '<thead><tr><th>#</th><th>Error</th><th>Type</th><th>Description</th><th>Row</th><th>Column</th></tr></thead>';
+    fileContent += '<thead><tr><th>#</th><th>Type</th><th>Description</th><th>Row</th><th>Column</th></tr></thead>';
     fileContent += '<tbody>';
 
     fileContent += '</tbody>';
