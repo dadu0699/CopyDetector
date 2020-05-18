@@ -1,6 +1,6 @@
-import { ClassSController } from "./ClassSContoller";
-import { ClassS } from "../models/ClassS";
-import { MethodS } from "../models/MethodS";
+import { ClassSController } from './ClassSContoller';
+import { ClassS } from '../models/ClassS';
+import { MethodS } from '../models/MethodS';
 
 export class CopyVController {
     private principal: ClassS;

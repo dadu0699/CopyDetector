@@ -1,4 +1,4 @@
-import { MethodS } from "./MethodS";
+import { MethodS } from './MethodS';
 
 export class ClassS {
     private name: string;

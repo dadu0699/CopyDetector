@@ -1,7 +1,7 @@
-import { ClassS } from "../models/ClassS";
-import { MethodS } from "../models/MethodS";
-import { ParamS } from "../models/ParamS";
-import { VariableS } from "../models/VariableS";
+import { ClassS } from '../models/ClassS';
+import { MethodS } from '../models/MethodS';
+import { ParamS } from '../models/ParamS';
+import { VariableS } from '../models/VariableS';
 
 export class ClassSController {
     private classS: ClassS;

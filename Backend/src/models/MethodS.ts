@@ -1,5 +1,5 @@
 import { ParamS } from './ParamS';
-import { VariableS } from "./VariableS";
+import { VariableS } from './VariableS';
 
 export class MethodS {
     private type: string;
