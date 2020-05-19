@@ -2,8 +2,6 @@ import { Router } from 'express';
 import { CopyVController } from '../controllers/CopyVController';
 import { ErrorController } from '../controllers/ErrorController';
 
-const fs = require('fs');
-const path = require('path');
 const parser = require('../util/grammar.js');
 
 class IndexRoutes {

@@ -182,7 +182,7 @@ function copyClassReport(data) {
     if (Object.keys(data).length !== 0) {
         consoleReports += 'Copy Class Report\n';
         consoleReports += '\tClass name: "' + data['class name'] + '"\n';
-        consoleReports += '\t\tNumber of methods: "' + data['number of methods'] + '"\n';
+        consoleReports += '\t\tNumber of methods: ' + data['number of methods'] + '\n';
         consoleReports += '\t\tMethods: \n';
         data['methods'].forEach(element => {
             consoleReports += '\t\t\t- Method name: "' + element['method name'] + '"\n';
