@@ -1,7 +1,7 @@
 /* Global variables */
 var astData = '';
-var fileContent;
-var errorList;
+var consoleReports = '';
+var fileContent = '';
 /* END -- Global variables */
 
 
@@ -177,6 +177,60 @@ function generateErrorReport(errorList, fileName) {
 
 
 
+/* Console reports*/
+function copyClassReport(data) {
+    if (Object.keys(data).length !== 0) {
+        consoleReports += 'Copy Class Report\n';
+        consoleReports += '\tClass name: "' + data['class name'] + '"\n';
+        consoleReports += '\t\tNumber of methods: "' + data['number of methods'] + '"\n';
+        consoleReports += '\t\tMethods: \n';
+        data['methods'].forEach(element => {
+            consoleReports += '\t\t\t- Method name: "' + element['method name'] + '"\n';
+        });
+        consoleReports += '\n';
+    }
+}
+
+function copyFunctionReport(data) {
+    if (Object.keys(data).length !== 0) {
+        consoleReports += 'Copy Function Report\n';
+        consoleReports += '\tClass name: "' + data['class name'] + '"\n';
+        consoleReports += '\t\tMethods: \n';
+        data['copy methods'].forEach(element => {
+            consoleReports += '\t\t\t- Type of method:  "' + element['type of method'] + '"\n';
+            consoleReports += '\t\t\t  Method name:     "' + element['method name'] + '"\n';
+            consoleReports += '\t\t\t  Parameters: \n';
+
+            element['parameters'].forEach(param => {
+                consoleReports += '\t\t\t\t- Type:          "' + param['type'] + '"\n';
+                consoleReports += '\t\t\t\t  Identifier:    "' + param['identifier'] + '"\n';
+            });
+        });
+        consoleReports += '\n';
+    }
+}
+
+function copyVariableReport(data) {
+    if (Object.keys(data).length !== 0) {
+        consoleReports += 'Variable Report Copy\n';
+        consoleReports += '\tClass name: "' + data['class name'] + '"\n';
+        consoleReports += '\t\tMethods: \n';
+        data['methods'].forEach(element => {
+            consoleReports += '\t\t\t- Method name:     "' + element['method name'] + '"\n';
+            consoleReports += '\t\t\t  Variables: \n';
+
+            element['variables'].forEach(item => {
+                consoleReports += '\t\t\t\t- Type:          "' + item['type'] + '"\n';
+                consoleReports += '\t\t\t\t  Identifier:    "' + item['name'] + '"\n';
+            });
+        });
+        consoleReports += '\n';
+    }
+}
+/*END -- Console reports*/
+
+
+
 /* Conection */
 function sendData() {
     var url = 'http://localhost:3000/';
@@ -196,11 +250,14 @@ function sendData() {
                 } else {
                     var dataJSON = res.data;
                     astData = dataJSON.astReport;
-                    generateAST();
+                    consoleReports = '';
 
-                    console.log(dataJSON.copyClassReport);
-                    console.log(dataJSON.copyFunctionReport);
-                    console.log(dataJSON.copyVariableReport);
+                    generateAST();
+                    copyClassReport(JSON.parse(dataJSON.copyClassReport));
+                    copyFunctionReport(JSON.parse(dataJSON.copyFunctionReport));
+                    copyVariableReport(JSON.parse(dataJSON.copyVariableReport));
+
+                    consoleEditor.getDoc().setValue(consoleReports);
                 }
             } else {
                 alert('Error');
