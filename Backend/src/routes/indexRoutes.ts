@@ -16,15 +16,15 @@ class IndexRoutes {
 
     config(): void {
         this.router.get('/', (req, res) => {
-            try {
-                let route = path.resolve(__dirname, '../entrada.txt');
-                let route2 = path.resolve(__dirname, '../entrada2.txt');
-                let routeJSON = path.resolve(__dirname, '../ast.json');
-                const mainFile = fs.readFileSync(route);
-                const secondaryFile = fs.readFileSync(route2);
+            res.send('Copy Detector');
+        });
 
-                const primaryAST = JSON.stringify(parser.parse(mainFile.toString()), null, 2);
-                const secondaryAST = JSON.stringify(parser.parse(secondaryFile.toString()), null, 2);
+        this.router.post('/', (req, res) => {
+            let data = req.body;
+
+            try {
+                const primaryAST = JSON.stringify(parser.parse(data['mainFile']), null, 2);
+                const secondaryAST = JSON.stringify(parser.parse(data['secondaryFile']), null, 2);
                 const primaryJSON = JSON.parse(primaryAST);
                 const secondaryJSON = JSON.parse(secondaryAST);
 
@@ -40,16 +40,25 @@ class IndexRoutes {
                 if (primaryJSON.hasOwnProperty('error')
                     || secondaryJSON.hasOwnProperty('error')) {
                     if (primaryJSON.hasOwnProperty('error')) {
+                        console.log('main file errors');
                         errorController = new ErrorController(primaryJSON);
                         primaryErrors = errorController.getErrorList();
-                        console.log('main file errors');
                     }
 
                     if (secondaryJSON.hasOwnProperty('error')) {
-                        errorController = new ErrorController(primaryJSON);
-                        secondaryErrors = errorController.getErrorList();
                         console.log('secondary file errors');
+                        errorController = new ErrorController(secondaryJSON);
+                        secondaryErrors = errorController.getErrorList();
                     }
+
+                    let results = {
+                        'primaryErrors': primaryErrors,
+                        'secondaryErrors': secondaryErrors
+                    }
+                    res.status(200).send({
+                        code: '200',
+                        errors: results
+                    });
                 } else if (primaryJSON.hasOwnProperty('class')
                     && secondaryJSON.hasOwnProperty('class')) {
                     let cp = new CopyVController(primaryAST, secondaryAST);
@@ -58,12 +67,21 @@ class IndexRoutes {
                     copyClassReport = cp.getCopyClassData();
                     copyFunctionReport = cp.getCopyMethods();
                     copyVariableReport = cp.getCopyMVariables();
+
+                    let results = {
+                        'astReport': astReport,
+                        'copyClassReport': copyClassReport,
+                        'copyFunctionReport': copyFunctionReport,
+                        'copyVariableReport': copyVariableReport
+                    }
+                    res.status(200).send({
+                        code: '200',
+                        data: results
+                    });
                 } else {
+                    res.status(500).send('error parsing');
                     console.log('error parsing');
                 }
-
-                fs.writeFileSync(routeJSON, primaryAST);
-                res.sendFile(routeJSON);
             } catch (e) {
                 console.error(e);
                 return;
