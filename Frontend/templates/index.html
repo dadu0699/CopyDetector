@@ -14,8 +14,7 @@
     <link rel="stylesheet" href="/templates/assets/codemirror/lib/codemirror.css">
     <link rel="stylesheet" href="/templates/assets/codemirror/theme/dracula.css">
     <!-- jsTree -->
-    <link rel="stylesheet"
-        href="//www.orangehilldev.com/jstree-bootstrap-theme/demo/assets/dist/themes/proton/style.css" />
+    <link rel="stylesheet" href="/templates/assets/jsTree/themes/proton/style.css" />
     <link rel="stylesheet" href="/templates/assets/jsTree/themes/default/style.min.css" />
     <!-- Custom -->
     <link rel="stylesheet" href="/templates/assets/css/style.css">
@@ -46,7 +45,7 @@
                             Open file to compare
                             <input type="file" id="input-secondaryFile">
                         </a>
-                        <a class="dropdown-item">Analyze</a>
+                        <a class="dropdown-item" onclick="sendData()">Analyze</a>
                         <div class="dropdown-divider"></div>
                         <a class="dropdown-item" id="saveFile">Save main file</a>
                         <a class="dropdown-item" id="saveFileCompare">Save file to compare</a>
@@ -59,7 +58,7 @@
                     </a>
                     <div class="dropdown-menu" aria-labelledby="navbarReporte">
                         <a class="dropdown-item" id="errorReport">List of errors</a>
-                        <a class="dropdown-item" id="astButton">AST</a>
+                        <a class="dropdown-item" onclick="generateAST()">AST</a>
                         <a class="dropdown-item">Copy Report</a>
                     </div>
                 </li>

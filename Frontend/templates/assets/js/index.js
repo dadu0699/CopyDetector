@@ -1,5 +1,5 @@
 /* Global variables */
-var astData = '<ul><li>Root node <ul><li>Child node 1</li><li>Child node 2</li><li>Child node 3</li><li>Child node 4</li></ul></li></ul>';
+var astData = '';
 var fileContent;
 var errorList;
 /* END -- Global variables */
@@ -84,7 +84,7 @@ function readFileContent(file) {
 
 
 /* AST */
-document.getElementById('astButton').onclick = function () {
+function generateAST() {
     $('#astDiv').html('');
     $('#astDiv').prepend('<div class="astPanel" id="AST">' + astData + '</div>');
     $('#AST').jstree({
@@ -132,6 +132,7 @@ function writeContent(content, fileName, contentType) {
 /* END -- Create download file */
 
 
+
 /* HTML report structure */
 function header() {
     fileContent = '';
@@ -155,7 +156,7 @@ function footer() {
     fileContent += '</html>';
 }
 
-function generateErrorReport() {
+function generateErrorReport(errorList, fileName) {
     header();
     fileContent += '<title>Errors</title>';
     fileContent += '</head>';
@@ -165,14 +166,50 @@ function generateErrorReport() {
     fileContent += '<table id=\"example\" class=\"table table - striped table - bordered\" style=\"width: 100 % \">';
     fileContent += '<thead><tr><th>#</th><th>Type</th><th>Description</th><th>Row</th><th>Column</th></tr></thead>';
     fileContent += '<tbody>';
-
+    fileContent += errorList;
     fileContent += '</tbody>';
     fileContent += '</table>';
     fileContent += '</div>';
     footer();
-    writeContent(fileContent, 'errorList.html', 'text/html');
+    writeContent(fileContent, fileName + '.html', 'text/html');
 }
 /* END -- HTML report structure */
+
+
+
+/* Conection */
+function sendData() {
+    var url = 'http://localhost:3000/';
+
+    if (principalEditor.getDoc().getValue().length > 0 && comparatorEditor.getDoc().getValue().length > 0) {
+        var files = {
+            'mainFile': principalEditor.getDoc().getValue(),
+            'secondaryFile': comparatorEditor.getDoc().getValue()
+        }
+
+        $.post(url, files, function (res, status) {
+            if (status.toString() == 'success') {
+                if (res.hasOwnProperty('errors')) {
+                    var errorsJSON = res.errors;
+                    generateErrorReport(errorsJSON.primaryErrors, 'mainFile');
+                    generateErrorReport(errorsJSON.secondaryErrors, 'secondaryFile');
+                } else {
+                    var dataJSON = res.data;
+                    astData = dataJSON.astReport;
+                    generateAST();
+
+                    console.log(dataJSON.copyClassReport);
+                    console.log(dataJSON.copyFunctionReport);
+                    console.log(dataJSON.copyVariableReport);
+                }
+            } else {
+                alert('Error');
+            }
+        });
+    }
+}
+/* END -- Conection */
+
 
 
 /*
