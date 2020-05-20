@@ -64,11 +64,11 @@ stringLiteral           ({doubleQuote}((?:\\{doubleQuote}|(?:(?!{doubleQuote}).)
 "void"                  return 'void'
 "while"                 return 'while'
 
-"<"                     return '<'
 "<="                    return '<='
+"<"                     return '<'
 "=="                    return '=='
-">"                     return '>'
 ">="                    return '>='
+">"                     return '>'
 "!="                    return '!='
 "||"                    return '||'
 "&&"                    return '&&'
@@ -124,7 +124,7 @@ CLASS : 'class' 'identifier' '{' BODYCLASS '}'      { $$ = { 'class_name': $2, '
       | 'class' 'identifier' '{' '}'                { $$ = { 'class_name': $2, 'class_content': [] }; }
       | 'class' error '{' BODYCLASS '}'             { errorList.push(new Error(idError, 'Syntactic error', this._$.first_line, this._$.first_column, yytext)); console.error('Syntactic error: ' + yytext + ' in the line ' + this._$.first_line + ' and column ' + this._$.first_column); idError++; }
       | 'class' error '{' '}'                       { errorList.push(new Error(idError, 'Syntactic error', this._$.first_line, this._$.first_column, yytext)); console.error('Syntactic error: ' + yytext + ' in the line ' + this._$.first_line + ' and column ' + this._$.first_column); idError++; }
-      | error ERROR                   { errorList.push(new Error(idError, 'Syntactic error', this._$.first_line, this._$.first_column, yytext)); console.error('Syntactic error: ' + yytext + ' in the line ' + this._$.first_line + ' and column ' + this._$.first_column); idError++; }
+      | error ERROR                                 { errorList.push(new Error(idError, 'Syntactic error', this._$.first_line, this._$.first_column, yytext)); console.error('Syntactic error: ' + yytext + ' in the line ' + this._$.first_line + ' and column ' + this._$.first_column); idError++; }
       ;
 
 BODYCLASS : BODYCLASS METHOD            { $1.push($2); $$ = $1; }

@@ -98,23 +98,23 @@ export class CopyVController {
                     isCopyMethod = false;
                 }
             });
-        }
 
-        let methodsData: any = [];
-        methods.forEach(element => {
-            methodsData.push({
-                'type of method': element.getType(),
-                'method name': element.getName(),
-                'parameters': element.getParams()
+            let methodsData: any = [];
+            methods.forEach(element => {
+                methodsData.push({
+                    'type of method': element.getType(),
+                    'method name': element.getName(),
+                    'parameters': element.getParams()
+                });
             });
-        });
-        this.copyMethods = {
-            'class name': this.secondary.getName(),
-            'copy methods': methodsData
-        }
+            this.copyMethods = {
+                'class name': this.secondary.getName(),
+                'copy methods': methodsData
+            }
 
-        // console.log('Copy methods:');
-        // console.log(JSON.stringify(this.copyMethods, null, 2));
+            // console.log('Copy methods:');
+            // console.log(JSON.stringify(this.copyMethods, null, 2));
+        }
     }
 
     private copyVariableReport(): void {
@@ -142,22 +142,22 @@ export class CopyVController {
                     methods.push(method);
                 }
             });
-        }
 
-        let methodsData: any = [];
-        methods.forEach(element => {
-            methodsData.push({
-                'method name': element.getName(),
-                'variables': element.getVariables()
+            let methodsData: any = [];
+            methods.forEach(element => {
+                methodsData.push({
+                    'method name': element.getName(),
+                    'variables': element.getVariables()
+                });
             });
-        });
-        this.copyMVariables = {
-            'class name': this.secondary.getName(),
-            'methods': methodsData
-        }
+            this.copyMVariables = {
+                'class name': this.secondary.getName(),
+                'methods': methodsData
+            }
 
-        // console.log('Copy variables:');
-        // console.log(JSON.stringify(this.copyMVariables, null, 2));
+            // console.log('Copy variables:');
+            // console.log(JSON.stringify(this.copyMVariables, null, 2));
+        }
     }
 
     private astReport(jsonData: any): void {
