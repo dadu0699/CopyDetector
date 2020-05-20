@@ -235,6 +235,10 @@ function copyVariableReport(data) {
 function sendData() {
     var url = 'http://localhost:3000/';
 
+    astData = '';
+    generateAST();
+    consoleEditor.getDoc().setValue('');
+
     if (principalEditor.getDoc().getValue().length > 0 && comparatorEditor.getDoc().getValue().length > 0) {
         var files = {
             'mainFile': principalEditor.getDoc().getValue(),
