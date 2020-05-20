@@ -131,6 +131,7 @@ BODYCLASS : BODYCLASS METHOD            { $1.push($2); $$ = $1; }
           | BODYCLASS DECLARATION       { $1.push($2); $$ = $1; }
           | METHOD                      { $$ = [$1]; }
           | DECLARATION                 { $$ = [$1]; }
+          | error                       { errorList.push(new Error(idError, 'Syntactic error', this._$.first_line, this._$.first_column, yytext)); console.error('Syntactic error: ' + yytext + ' in the line ' + this._$.first_line + ' and column ' + this._$.first_column); idError++; }
           ;
 
 METHOD : 'void' 'identifier' '(' ')' BODY           { $$ = {'method_name': $2, 'type': $1, 'method_params': [], 'method_content': $5 }; if(returnSentence && returnExpression) { errorList.push(new Error(idError, 'Syntactic error', errorLine, errorcolumn, 'Unexpected return value')); console.error('Syntactic error: Unexpected return value in the line ' + errorLine + ' and column ' + errorcolumn); idError++; } returnSentence = false; if(breakCounter>0 || continueCounter>0) { errorList.push(new Error(idError, 'Syntactic error', errorLine, errorcolumn, 'No enclosing loop out of which to break or continue')); console.error('Syntactic error: No enclosing loop out of which to break or continue in the line ' + errorLine + ' and column ' + errorcolumn); idError++; } breakCounter = 0; continueCounter = 0; }
@@ -151,8 +152,8 @@ PARAMS : PARAMS ',' PARAM   { $1.push($3); $$ = $1; }
        ;
 
 PARAM : TYPE 'identifier'   { $$ = { 'type': $1, 'identifier' : $2 }; }
-        | error             { errorList.push(new Error(idError, 'Syntactic error', this._$.first_line, this._$.first_column, yytext)); console.error('Syntactic error: ' + yytext + ' in the line ' + this._$.first_line + ' and column ' + this._$.first_column); idError++; }
-        ;
+      | error               { errorList.push(new Error(idError, 'Syntactic error', this._$.first_line, this._$.first_column, yytext)); console.error('Syntactic error: ' + yytext + ' in the line ' + this._$.first_line + ' and column ' + this._$.first_column); idError++; }
+      ;
 
 BODY : '{' '}'              { $$ = []; }
      | '{' SENTENCES '}'    { $$ = $2; }
@@ -245,10 +246,10 @@ IF : 'if' CONDITION BODY                    { $$ = { 'if' : { 'condition' : $2, 
    | 'if' CONDITION BODY 'else' BODY        { $$ = { 'if' : { 'condition' : $2, 'sentences' : $3 }, 'else': $5 }; }
    ;
 
-SWITCH : 'switch' CONDITION '{' CASES DEFAULT '}'   { $$ = { 'condition' : $2, 'case_sentences' : $4, 'default': $5 }; }
-       | 'switch' CONDITION '{' CASES '}'           { $$ = { 'condition' : $2, 'case_sentences' : $4 }; }
-       | 'switch' CONDITION '{' DEFAULT '}'         { $$ = { 'condition' : $2, 'default' : $4 }; }
-       | 'switch' CONDITION '{' '}'                 { $$ = { 'condition' : $2 }; }
+SWITCH : 'switch' CONDITION '{' CASES DEFAULT '}'         { $$ = { 'condition' : $2, 'case_sentences' : $4, 'default': $5 }; }
+       | 'switch' CONDITION '{' CASES '}'                 { $$ = { 'condition' : $2, 'case_sentences' : $4 }; }
+       | 'switch' CONDITION '{' DEFAULT '}'               { $$ = { 'condition' : $2, 'default' : $4 }; }
+       | 'switch' CONDITION '{' '}'                       { $$ = { 'condition' : $2 }; }
        | 'switch' CONDITION '{' error ERROR '}'           { errorList.push(new Error(idError, 'Syntactic error', this._$.first_line, this._$.first_column, yytext)); console.error('Syntactic error: ' + yytext + ' in the line ' + this._$.first_line + ' and column ' + this._$.first_column); idError++; }
        ;
 
@@ -258,12 +259,12 @@ CASES : CASES CASE      { $1.push($2); $$ = $1; }
 
 CASE : 'case' EXPRESSION ':'                { $$ = { 'expression' : $2, 'sentences' : [] }; }
      | 'case' EXPRESSION ':' SENTENCES      { $$ = { 'expression' : $2, 'sentences' : $4 }; }
-     | 'case' error ERROR     { errorList.push(new Error(idError, 'Syntactic error', this._$.first_line, this._$.first_column, yytext)); console.error('Syntactic error: ' + yytext + ' in the line ' + this._$.first_line + ' and column ' + this._$.first_column); idError++; }
+     | 'case' error ERROR                   { errorList.push(new Error(idError, 'Syntactic error', this._$.first_line, this._$.first_column, yytext)); console.error('Syntactic error: ' + yytext + ' in the line ' + this._$.first_line + ' and column ' + this._$.first_column); idError++; }
      ;
 
 DEFAULT : 'default' ':'                 { $$ = { 'sentences' : [] }; }
         | 'default' ':' SENTENCES       { $$ = { 'sentences' : $3 }; }
-        | 'default' error           { errorList.push(new Error(idError, 'Syntactic error', this._$.first_line, this._$.first_column, yytext)); console.error('Syntactic error: ' + yytext + ' in the line ' + this._$.first_line + ' and column ' + this._$.first_column); idError++; }
+        | 'default' error               { errorList.push(new Error(idError, 'Syntactic error', this._$.first_line, this._$.first_column, yytext)); console.error('Syntactic error: ' + yytext + ' in the line ' + this._$.first_line + ' and column ' + this._$.first_column); idError++; }
         ;
 
 FOR : 'for' '(' TYPE 'identifier' ASSIGNMENT_EXPRESSION ';' EXPRESSION ';' ITERATOR ')' BODY    { $$ = { 'initializer' : { 'type' : $3, identifier: $4, 'value' : $5 }, 'condition' : $7, 'iterator' : $9, 'sentences' : $11 }; }
