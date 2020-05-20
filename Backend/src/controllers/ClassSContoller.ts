@@ -38,14 +38,16 @@ export class ClassSController {
     private buildMehtods(classContent: any): void {
         for (let index = 0; index < Object.keys(classContent).length; index++) {
             let methodS: MethodS = new MethodS();
-            methodS.setName(this.getKey('method_name', classContent[index]));
-            methodS.setType(this.getKey('type', classContent[index]));
+            if (this.getKey('method_name', classContent[index]) != false) {
+                methodS.setName(this.getKey('method_name', classContent[index]));
+                methodS.setType(this.getKey('type', classContent[index]));
 
-            methodS.setParams(this.buildParams(this.getKey('method_params', classContent[index])));
+                methodS.setParams(this.buildParams(this.getKey('method_params', classContent[index])));
 
-            methodS.setVariabes(this.buildVariables(this.getKey('method_content', classContent[index])));
+                methodS.setVariabes(this.buildVariables(this.getKey('method_content', classContent[index])));
 
-            this.classS.getMethods().push(methodS);
+                this.classS.getMethods().push(methodS);
+            }
         }
     }
 
@@ -117,6 +119,7 @@ export class ClassSController {
                 }
             }
         }
+        return false;
     }
 
     private fillIn(data: string): void {
