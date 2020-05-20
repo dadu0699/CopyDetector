@@ -79,6 +79,14 @@ body {
     background-color: #282a36;
 }
 
+.jstree-proton .jstree-hovered {
+    background: #282a36;
+}
+
+.jstree-proton .jstree-clicked {
+    background: #282a36;
+}
+
 /* SCROLLBAR CHROME */
 ::-webkit-scrollbar {
     width: 5px;

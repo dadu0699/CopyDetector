@@ -197,12 +197,12 @@ function copyFunctionReport(data) {
         consoleReports += '\tClass name: "' + data['class name'] + '"\n';
         consoleReports += '\t\tMethods: \n';
         data['copy methods'].forEach(element => {
-            consoleReports += '\t\t\t- Type of method:  "' + element['type of method'] + '"\n';
+            consoleReports += '\t\t\t- Type of method:  ' + element['type of method'] + '\n';
             consoleReports += '\t\t\t  Method name:     "' + element['method name'] + '"\n';
             consoleReports += '\t\t\t  Parameters: \n';
 
             element['parameters'].forEach(param => {
-                consoleReports += '\t\t\t\t- Type:          "' + param['type'] + '"\n';
+                consoleReports += '\t\t\t\t- Type:          ' + param['type'] + '\n';
                 consoleReports += '\t\t\t\t  Identifier:    "' + param['identifier'] + '"\n';
             });
         });
@@ -220,7 +220,7 @@ function copyVariableReport(data) {
             consoleReports += '\t\t\t  Variables: \n';
 
             element['variables'].forEach(item => {
-                consoleReports += '\t\t\t\t- Type:          "' + item['type'] + '"\n';
+                consoleReports += '\t\t\t\t- Type:          ' + item['type'] + '\n';
                 consoleReports += '\t\t\t\t  Identifier:    "' + item['name'] + '"\n';
             });
         });
