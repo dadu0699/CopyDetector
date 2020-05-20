@@ -115,6 +115,10 @@ document.getElementById('saveFileCompare').onclick = function () {
 document.getElementById('errorReport').onclick = function () {
     generateErrorReport();
 }
+
+document.getElementById('copyReport').onclick = function () {
+    writeContent(consoleReports, 'copyReport.txt', 'text/txt')
+}
 /* END -- Download files */
 
 
