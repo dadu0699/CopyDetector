@@ -165,7 +165,7 @@ export class CopyVController {
     private astReport(jsonData: any): void {
         for (const i in jsonData) {
             if (Array.isArray(jsonData[i]) || typeof jsonData[i] === 'object') {
-                this.ASTData += ('<ul><li>' + i)
+                this.ASTData += ('<ul><li class="jstree-open">' + i)
                 this.astReport(jsonData[i]);
                 this.ASTData += ('</li></ul>');
             } else {
