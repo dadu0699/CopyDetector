@@ -285,14 +285,14 @@ DOWHILE : 'do' BODY 'while' CONDITION ';'  { $$ = { 'sentences' : $2, 'while' : 
         ;
 
 RETURN : 'return' ';'               { $$ = ''; returnExpression = false; returnSentence = true; errorLine = this._$.first_line; errorcolumn = this._$.first_column; }
-	   | 'return' EXPRESSION ';'    { $$ = $2; returnExpression = true; returnSentence = true; errorLine = this._$.first_line; errorcolumn = this._$.first_column; }
-	   ;
+	 | 'return' EXPRESSION ';'    { $$ = $2; returnExpression = true; returnSentence = true; errorLine = this._$.first_line; errorcolumn = this._$.first_column; }
+	 ;
 
 BREAK : 'break' ';' { breakCounter++; errorLine = this._$.first_line; errorcolumn = this._$.first_column; }
-	  ;
+	;
 
 CONTINUE : 'continue' ';' { continueCounter++; errorLine = this._$.first_line; errorcolumn = this._$.first_column; }
-	     ;
+	   ;
 
 ERROR : '{'
       | '}'
