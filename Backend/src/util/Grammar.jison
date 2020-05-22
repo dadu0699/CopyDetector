@@ -131,7 +131,7 @@ BODYCLASS : BODYCLASS METHOD            { $1.push($2); $$ = $1; }
           | BODYCLASS DECLARATION       { $1.push($2); $$ = $1; }
           | METHOD                      { $$ = [$1]; }
           | DECLARATION                 { $$ = [$1]; }
-          | error                       { errorList.push(new Error(idError, 'Syntactic error', this._$.first_line, this._$.first_column, yytext + ' Was expected ' + yy.parser.hash.expected)); console.error('Syntactic error: ' + yytext + ' Was expected ' + yy.parser.hash.expected + ' in the line ' + this._$.first_line + ' and column ' + this._$.first_column); idError++; }
+          | error ERROR                 { errorList.push(new Error(idError, 'Syntactic error', this._$.first_line, this._$.first_column, yytext + ' Was expected ' + yy.parser.hash.expected)); console.error('Syntactic error: ' + yytext + ' Was expected ' + yy.parser.hash.expected + ' in the line ' + this._$.first_line + ' and column ' + this._$.first_column); idError++; }
           ;
 
 METHOD : 'void' 'identifier' '(' ')' BODY           { $$ = {'method_name': $2, 'type': $1, 'method_params': [], 'method_content': $5 }; if(returnSentence && returnExpression) { errorList.push(new Error(idError, 'Syntactic error', errorLine, errorcolumn, 'Unexpected return value')); console.error('Syntactic error: Unexpected return value in the line ' + errorLine + ' and column ' + errorcolumn); idError++; } returnSentence = false; if(breakCounter>0 || continueCounter>0) { errorList.push(new Error(idError, 'Syntactic error', errorLine, errorcolumn, 'No enclosing loop out of which to break or continue')); console.error('Syntactic error: No enclosing loop out of which to break or continue in the line ' + errorLine + ' and column ' + errorcolumn); idError++; } breakCounter = 0; continueCounter = 0; }
@@ -158,6 +158,7 @@ PARAM : TYPE 'identifier'   { $$ = { 'type': $1, 'identifier' : $2 }; }
 
 BODY : '{' '}'              { $$ = []; }
      | '{' SENTENCES '}'    { $$ = $2; }
+     | error               { errorList.push(new Error(idError, 'Syntactic error', this._$.first_line, this._$.first_column, yytext + ' Was expected ' + yy.parser.hash.expected)); console.error('Syntactic error: ' + yytext + ' Was expected ' + yy.parser.hash.expected + ' in the line ' + this._$.first_line + ' and column ' + this._$.first_column); idError++; }
      ;
 
 SENTENCES : SENTENCES SENTENCE  { $1.push($2); $$ = $1; }
