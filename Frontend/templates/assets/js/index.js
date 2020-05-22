@@ -228,7 +228,6 @@ function copyVariableReport(data) {
                 consoleReports += '\t\t\t\t  Identifier:    "' + item['name'] + '"\n';
             });
         });
-        consoleReports += '\n';
     }
 }
 /*END -- Console reports*/
