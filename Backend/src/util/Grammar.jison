@@ -261,7 +261,7 @@ CASES : CASES CASE      { $1.push($2); $$ = $1; }
 
 CASE : 'case' EXPRESSION ':'                { $$ = { 'expression' : $2, 'sentences' : [] }; }
      | 'case' EXPRESSION ':' SENTENCES      { $$ = { 'expression' : $2, 'sentences' : $4 }; }
-     | 'case' error ERROR                   { errorList.push(new Error(idError, 'Syntactic error', this._$.first_line, this._$.first_column, yytext + ' Was expected ' + yy.parser.hash.expected)); console.error('Syntactic error: ' + yytext + ' Was expected ' + yy.parser.hash.expected + ' in the line ' + this._$.first_line + ' and column ' + this._$.first_column); idError++; }
+     | 'case' error                         { errorList.push(new Error(idError, 'Syntactic error', this._$.first_line, this._$.first_column, yytext + ' Was expected ' + yy.parser.hash.expected)); console.error('Syntactic error: ' + yytext + ' Was expected ' + yy.parser.hash.expected + ' in the line ' + this._$.first_line + ' and column ' + this._$.first_column); idError++; }
      ;
 
 DEFAULT : 'default' ':'                 { $$ = { 'sentences' : [] }; }
@@ -271,7 +271,7 @@ DEFAULT : 'default' ':'                 { $$ = { 'sentences' : [] }; }
 
 FOR : 'for' '(' TYPE 'identifier' ASSIGNMENT_EXPRESSION ';' EXPRESSION ';' ITERATOR ')' BODY    { $$ = { 'initializer' : { 'type' : $3, identifier: $4, 'value' : $5 }, 'condition' : $7, 'iterator' : $9, 'sentences' : $11 }; }
     | 'for' '(' 'identifier' ASSIGNMENT_EXPRESSION ';' EXPRESSION ';' ITERATOR ')' BODY         { $$ = { 'initializer' : { identifier: $3, 'value' : $4 }, 'condition' : $6, 'iterator' : $7, 'sentences' : $10 }; }
-    | 'for' '(' error ')' BODY                                                                  { errorList.push(new Error(idError, 'Syntactic error', this._$.first_line, this._$.first_column, yytext + ' Was expected ' + yy.parser.hash.expected)); console.error('Syntactic error: ' + yytext + ' Was expected ' + yy.parser.hash.expected + ' in the line ' + this._$.first_line + ' and column ' + this._$.first_column); idError++; }
+    | 'for' error                                                                               { errorList.push(new Error(idError, 'Syntactic error', this._$.first_line, this._$.first_column, yytext + ' Was expected ' + yy.parser.hash.expected)); console.error('Syntactic error: ' + yytext + ' Was expected ' + yy.parser.hash.expected + ' in the line ' + this._$.first_line + ' and column ' + this._$.first_column); idError++; }
     ;
 
 ITERATOR : 'identifier' '++'    { $$ = {'identifier': $1, 'value' : $1 + ' + 1' }; }
