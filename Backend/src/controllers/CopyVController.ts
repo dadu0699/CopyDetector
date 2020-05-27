@@ -6,7 +6,6 @@ export class CopyVController {
     private principal: ClassS;
     private secondary: ClassS;
 
-    private ASTData: string;
     private copyClassData: any;
     private copyMethods: any;
     private copyMVariables: any;
@@ -14,7 +13,6 @@ export class CopyVController {
     constructor(data1: string, data2: string) {
         this.principal = new ClassSController(data1).getData();
         this.secondary = new ClassSController(data2).getData();
-        this.ASTData = '';
         this.copyClassData = {};
         this.copyMethods = {};
         this.copyMVariables = {};
@@ -22,7 +20,6 @@ export class CopyVController {
         this.copyClassReport();
         this.copyFunctionReport();
         this.copyVariableReport();
-        this.astReport(JSON.parse(data1));
     }
 
     private copyClassReport(): void {
@@ -160,22 +157,6 @@ export class CopyVController {
                 // console.log(JSON.stringify(this.copyMVariables, null, 2));
             }
         }
-    }
-
-    private astReport(jsonData: any): void {
-        for (const i in jsonData) {
-            if (Array.isArray(jsonData[i]) || typeof jsonData[i] === 'object') {
-                this.ASTData += ('<ul><li class="jstree-open">' + i)
-                this.astReport(jsonData[i]);
-                this.ASTData += ('</li></ul>');
-            } else {
-                this.ASTData += ('<ul><li>' + i + ': ' + jsonData[i] + '</li></ul>');
-            }
-        }
-    }
-
-    public getASTDATA(): string {
-        return this.ASTData;
     }
 
     public getCopyClassData(): any {

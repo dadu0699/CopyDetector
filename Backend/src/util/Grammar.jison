@@ -106,8 +106,8 @@ stringLiteral           ({doubleQuote}((?:\\{doubleQuote}|(?:(?!{doubleQuote}).)
 %start START
 %% /* language grammar */
 
-START : IMPORTS CLASS 'EOF'     { if (errorList.length > 0) { let eL = []; eL = eL.concat(errorList); errorList = []; idError = 0; return { 'error': eL }; } return { 'imports': $1, 'class': $2 } }
-      | CLASS 'EOF'             { if (errorList.length > 0) { let eL = []; eL = eL.concat(errorList); errorList = []; idError = 0; return { 'error': eL }; } return { 'class': $1 } }
+START : IMPORTS CLASSES 'EOF'     { if (errorList.length > 0) { let eL = []; eL = eL.concat(errorList); errorList = []; idError = 0; return { 'error': eL }; } return { 'imports': $1, 'classes': $2 } }
+      | CLASSES 'EOF'             { if (errorList.length > 0) { let eL = []; eL = eL.concat(errorList); errorList = []; idError = 0; return { 'error': eL }; } return { 'classes': $1 } }
       | 'EOF'
       | error                   { errorList.push(new Error(idError, 'Syntactic error', this._$.first_line, this._$.first_column, yytext + ' Was expected ' + yy.parser.hash.expected)); console.error('Syntactic error: ' + yytext + ' Was expected ' + yy.parser.hash.expected + ' in the line ' + this._$.first_line + ' and column ' + this._$.first_column); idError++; }
       ;
@@ -119,6 +119,10 @@ IMPORTS : IMPORTS IMPORT    { $1.push($2); $$ = $1; }
 IMPORT : 'import' 'identifier' ';'       { $$ = { 'import': $2 }; }
        | 'import' error                  { errorList.push(new Error(idError, 'Syntactic error', this._$.first_line, this._$.first_column, yytext + ' Was expected ' + yy.parser.hash.expected)); console.error('Syntactic error: ' + yytext + ' Was expected ' + yy.parser.hash.expected + ' in the line ' + this._$.first_line + ' and column ' + this._$.first_column); idError++; }
        ;
+
+CLASSES : CLASSES CLASS { $1.push($2); $$ = $1; }
+        | CLASS         { $$ = [$1]; }
+        ;
 
 CLASS : 'class' 'identifier' '{' BODYCLASS '}'      { $$ = { 'class_name': $2, 'class_content': $4 }; }
       | 'class' 'identifier' '{' '}'                { $$ = { 'class_name': $2, 'class_content': [] }; }

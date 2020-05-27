@@ -29,9 +29,9 @@ export class ClassSController {
     }
 
     private buildClass(): void {
-        this.classS.setName(this.jsonData['class']['class_name']);
+        this.classS.setName(this.jsonData['class_name']);
 
-        let classContent = this.jsonData['class']['class_content'];
+        let classContent = this.jsonData['class_content'];
         this.buildMehtods(classContent);
     }
 

@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { CopyVController } from '../controllers/CopyVController';
 import { ErrorController } from '../controllers/ErrorController';
+import { ASTController } from '../controllers/ASTController';
 
 const parser = require('../util/grammar.js');
 
@@ -30,10 +31,9 @@ class IndexRoutes {
                 let primaryErrors;
                 let secondaryErrors;
 
-                let astReport;
-                let copyClassReport;
-                let copyFunctionReport;
-                let copyVariableReport;
+                let copyClassReport: Array<any> = [];
+                let copyFunctionReport: Array<any> = [];
+                let copyVariableReport: Array<any> = [];
 
                 if (primaryJSON.hasOwnProperty('error')
                     || secondaryJSON.hasOwnProperty('error')) {
@@ -57,17 +57,35 @@ class IndexRoutes {
                         code: '200',
                         errors: results
                     });
-                } else if (primaryJSON.hasOwnProperty('class')
-                    && secondaryJSON.hasOwnProperty('class')) {
-                    let cp = new CopyVController(primaryAST, secondaryAST);
+                } else if (primaryJSON.hasOwnProperty('classes')
+                    && secondaryJSON.hasOwnProperty('classes')) {
+                    let astReport = new ASTController(primaryAST);
+                    let ast2Report = new ASTController(secondaryAST);
 
-                    astReport = cp.getASTDATA();
-                    copyClassReport = cp.getCopyClassData();
-                    copyFunctionReport = cp.getCopyMethods();
-                    copyVariableReport = cp.getCopyMVariables();
+                    Object.entries(primaryJSON['classes']).forEach((ar1: any) => {
+                        Object.entries(secondaryJSON['classes']).forEach((ar2: any) => {
+                            let primary = JSON.stringify(ar1[1], null, 2);
+                            let secondary = JSON.stringify(ar2[1], null, 2);
+
+                            let cp = new CopyVController(primary, secondary);
+
+                            if (Object.keys(cp.getCopyClassData()).length !== 0) {
+                                copyClassReport.push(cp.getCopyClassData());
+                            }
+
+                            if (Object.keys(cp.getCopyMethods()).length !== 0) {
+                                copyFunctionReport.push(cp.getCopyMethods());
+                            }
+
+                            if (Object.keys(cp.getCopyMVariables()).length !== 0) {
+                                copyVariableReport.push(cp.getCopyMVariables());
+                            }
+                        });
+                    });
 
                     let results = {
-                        'astReport': astReport,
+                        'astReport': astReport.getASTDATA(),
+                        'ast2Report': ast2Report.getASTDATA(),
                         'copyClassReport': copyClassReport,
                         'copyFunctionReport': copyFunctionReport,
                         'copyVariableReport': copyVariableReport

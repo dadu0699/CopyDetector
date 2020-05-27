@@ -1,5 +1,6 @@
 /* Global variables */
 var astData = '';
+var ast2Data = '';
 var consoleReports = '';
 var fileContent = '';
 /* END -- Global variables */
@@ -88,6 +89,20 @@ function generateAST() {
     $('#astDiv').html('');
     $('#astDiv').prepend('<div class="astPanel" id="AST">' + astData + '</div>');
     $('#AST').jstree({
+        'core': {
+            'themes': {
+                'name': 'proton',
+                'responsive': true
+            }
+        },
+        "plugins": ["contextmenu"]
+    });
+}
+
+function generateAST2() {
+    $('#astDiv2').html('');
+    $('#astDiv2').prepend('<div class="astPanel" id="AST2">' + astData + '</div>');
+    $('#AST2').jstree({
         'core': {
             'themes': {
                 'name': 'proton',
@@ -239,7 +254,9 @@ function sendData() {
     var url = 'http://localhost:3000/';
 
     astData = '';
+    astData2 = '';
     generateAST();
+    generateAST2();
     consoleEditor.getDoc().setValue('');
 
     if (principalEditor.getDoc().getValue().length > 0 && comparatorEditor.getDoc().getValue().length > 0) {
@@ -257,12 +274,21 @@ function sendData() {
                 } else {
                     var dataJSON = res.data;
                     astData = dataJSON.astReport;
+                    astData2 = dataJSON.ast2Report;
                     consoleReports = '';
 
                     generateAST();
-                    copyClassReport(JSON.parse(dataJSON.copyClassReport));
-                    copyFunctionReport(JSON.parse(dataJSON.copyFunctionReport));
-                    copyVariableReport(JSON.parse(dataJSON.copyVariableReport));
+                    generateAST2();
+
+                    dataJSON.copyClassReport.forEach(element => {
+                        copyClassReport(JSON.parse(element));
+                    });
+                    dataJSON.copyFunctionReport.forEach(element => {
+                        copyFunctionReport(JSON.parse(element));
+                    });
+                    dataJSON.copyVariableReport.forEach(element => {
+                        copyVariableReport(JSON.parse(element));
+                    });
 
                     consoleEditor.getDoc().setValue(consoleReports);
                 }
