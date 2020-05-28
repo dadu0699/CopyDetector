@@ -36,7 +36,6 @@
                         Archive
                     </a>
                     <div class="dropdown-menu" aria-labelledby="navbarFile">
-                        <a class="dropdown-item">New Tab</a>
                         <a class="dropdown-item upload-btn-wrapper">
                             Open main file
                             <input type="file" id="input-principalFile">
@@ -63,13 +62,26 @@
                 </li>
             </ul>
         </div>
+        <div class="collapse navbar-collapse flex-grow-1 text-right" id="myNavbar7">
+            <ul class="navbar-nav ml-auto flex-nowrap">
+                <li class="nav-item">
+                    <a href="#editorsSection" class="nav-link">Editors</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#astSection" class="nav-link">AST</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#consoleSection" class="nav-link">Console</a>
+                </li>
+            </ul>
+        </div>
     </nav>
     <br>
     <div class="container-fluid row" style="height: 15px;"></div>
     <br>
 
     <div class="container-fluid">
-        <div class="row">
+        <div class="row" id="editorsSection">
             <div class="col-12 col-lg-6">
                 <textarea id="principalEditor"></textarea>
             </div>
@@ -82,7 +94,7 @@
         </div>
         <br>
 
-        <div class="row">
+        <div class="row" id="astSection">
             <div class="col-12 col-lg-6">
                 <div class="astPanel" id="astDiv">
                 </div>
@@ -97,8 +109,8 @@
         </div>
         <br>
 
-        <div class="row">
-            <div class="col-12 col-lg-6">
+        <div class="row" id="consoleSection">
+            <div class="col-12 col-lg-12">
                 <textarea id="consoleEditor"></textarea>
             </div>
         </div>
