@@ -40,6 +40,7 @@ var consoleEditor = CodeMirror.fromTextArea(document.getElementById('consoleEdit
     lint: true,
     readOnly: true
 });
+consoleEditor.setSize(null, '87vh');
 /* END -- Component initialization */
 
 

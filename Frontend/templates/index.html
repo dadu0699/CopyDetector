@@ -62,48 +62,60 @@
                 </li>
             </ul>
         </div>
-        <div class="collapse navbar-collapse flex-grow-1 text-right" id="myNavbar7">
-            <ul class="navbar-nav ml-auto flex-nowrap">
-                <li class="nav-item">
-                    <a href="#editorsSection" class="nav-link">Editors</a>
-                </li>
-                <li class="nav-item">
-                    <a href="#astSection" class="nav-link">AST</a>
-                </li>
-                <li class="nav-item">
-                    <a href="#consoleSection" class="nav-link">Console</a>
-                </li>
-            </ul>
-        </div>
     </nav>
-    <br>
-    <div class="container-fluid row" style="height: 15px;"></div>
-    <br>
+    <div class="container-fluid row" style="height: 10vh;"></div>
 
     <div class="container-fluid">
         <div class="row" id="editorsSection">
             <div class="col-12 col-lg-6">
-                <textarea id="principalEditor"></textarea>
+                <nav class="navbar navbar-dark py-0 bg-dark navbar-expand-sm py-md-0 commands customTab">
+                    <div class="navbar-collapse collapse w-100 order-3 dual-collapse2">
+                        <ul class="nav justify-content-center">
+                            <li class="nav-item">
+                                <a class="custom-navLink nav-link" href="#principalEditorTab"
+                                    data-toggle="tab">Editor</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="custom-navLink nav-link" href="#principalASTTab" data-toggle="tab">AST</a>
+                            </li>
+                        </ul>
+                    </div>
+                </nav>
+
+                <div class="tab-content">
+                    <div class="tab-pane active" id="principalEditorTab">
+                        <textarea class="tab-pane active" id="principalEditor"></textarea>
+                    </div>
+                    <div class="tab-pane" id="principalASTTab">
+                        <div class="astPanel" id="astDiv"></div>
+                    </div>
+                </div>
             </div>
 
             <div class="col-12 d-block d-sm-block d-md-block d-lg-none"><br></div>
 
             <div class="col-12 col-lg-6">
-                <textarea id="comparatorEditor"></textarea>
-            </div>
-        </div>
-        <br>
+                <nav class="navbar navbar-dark py-0 bg-dark navbar-expand-sm py-md-0 commands customTab">
+                    <div class="navbar-collapse collapse w-100 order-3 dual-collapse2">
+                        <ul class="nav justify-content-center">
+                            <li class="nav-item">
+                                <a class="custom-navLink nav-link" href="#secondaryEditorTab"
+                                    data-toggle="tab">Editor</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="custom-navLink nav-link" href="#secondaryASTTab" data-toggle="tab">AST</a>
+                            </li>
+                        </ul>
+                    </div>
+                </nav>
 
-        <div class="row" id="astSection">
-            <div class="col-12 col-lg-6">
-                <div class="astPanel" id="astDiv">
-                </div>
-            </div>
-
-            <div class="col-12 d-block d-sm-block d-md-block d-lg-none"><br><br></div>
-
-            <div class="col-12 col-lg-6">
-                <div class="astPanel" id="astDiv2">
+                <div class="tab-content">
+                    <div class="tab-pane active" id="secondaryEditorTab">
+                        <textarea id="comparatorEditor"></textarea>
+                    </div>
+                    <div class="tab-pane" id="secondaryASTTab">
+                        <div class="astPanel" id="astDiv2"></div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -111,7 +123,7 @@
 
         <div class="row" id="consoleSection">
             <div class="col-12 col-lg-12">
-                <textarea id="consoleEditor"></textarea>
+                <textarea class="consoleEditor" id="consoleEditor"></textarea>
             </div>
         </div>
         <br>
